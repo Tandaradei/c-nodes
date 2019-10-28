@@ -1,0 +1,1 @@
+clang src/main.c src/node.c src/node_value.c -o nodes.exe
