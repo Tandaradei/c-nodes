@@ -1,0 +1,17 @@
+html
+	head
+		link(rel="stylesheet",type="text/css",href="c-expression-viewer.css")
+		script(src="/ajax.js")
+		script(src="/ibs/d3/d3.v5.min.js")
+		script(src="c-expression-viewer.js")
+	body(onload="init()")
+		h1
+			img(src="/images/hs-aa-logo.svg",width="20%")
+			|C-expression-viewer
+		|expression:
+		input#expr
+		input(type="button",value="Draw tree",onclick="test()")
+		hr
+		svg#tree
+		hr
+		a(href="https://www.hs-aalen.de/de/pages/impressum") Impressum
