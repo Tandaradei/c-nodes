@@ -1,74 +1,63 @@
-/**********************************************************
-Syntaxbaum - Bibliothek
-**********************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "ast.h"
 
-void tree_output(ast * p, int n) {
-// Baum-Traversierung First-Order
-	if (n == 0)
-		printf("Explorer-View:\n");
-  if (p != NULL) {
-    printf("%s", &"              "[14-2*n]);
-    printf("%s\n", p->text);
-	  tree_output(p->c, n+1);
-    tree_output(p->l, n+1);
-    tree_output(p->r, n+1);
-  }
-}
+#include <stdio.h>
 
-void tree_tikz(ast * p, int n) {
-	// Baum-Traversierung First-Order
-	if (p != NULL) {
-		if (!n) {
-			printf("tikz-View:\n");
-			printf("\\Tree");
-		}
-		printf("%s", &"              "[14-2*n]);
-		if (p->l != NULL)
-		printf("[.");
-		printf("%s\n", p->text);
-		tree_tikz(p->c, n+1);
-		tree_tikz(p->l, n+1);
-		tree_tikz(p->r, n+1);
-		if (p->l != NULL)
-		printf("%s]\n", &"              "[14-2*n]);
-	}
-}
-
-void tree_d3json(ast * p, int n) {
-	// Baum-Traversierung First-Order
-	if (p != NULL) {
-		printf("%s", &"              "[14-2*n]);
-		printf("{\"name\": \"%s\",\n", p->text);
-		printf("%s", &"              "[14-2*n]);
-		printf("\"children\":[");
-		if (p->c != NULL)
-			tree_d3json(p->c, n+1), printf(",");
-		if (p->l != NULL)
-			tree_d3json(p->l, n+1);
-		if (p->r != NULL)
-			printf(","),tree_d3json(p->r, n+1);
-		printf("%s]}\n", &"              "[14-2*n]);
-	}
-}
-
-
-ast * new_node(char *t, ast * l, ast * r, ast * c) {
-    ast * p = (ast*) malloc(sizeof(ast));
-    if (p != NULL) {
-        p->l = l, p->r = r, p->c = c;
-        strcpy_s(p->text, 20, t);
+Node* makeNode_0(AbstractSyntaxTree* ast, Node (*createNode)(void)) {
+    if(ast->node_count < AST_MAX_NODES) {
+        ast->nodes[ast->node_count++] = createNode();
+        printf("Inserted node from makeNode_0 on #%d\n", ast->node_count-1);
+        return &(ast->nodes[ast->node_count-1]);
     }
-    return p;
+    printf("Failed to insert node from makeNode_0");
+    return NULL;
 }
 
-void tree_free(ast * p) { // Baum l�schen
-    if (p != NULL) {
-        tree_free(p->l);
-        tree_free(p->r);
-        free(p);
+Node* makeNode_1(AbstractSyntaxTree* ast, Node (*createNode)(Node* node_0), Node* node_0) {
+    if(ast->node_count < AST_MAX_NODES) {
+        ast->nodes[ast->node_count++] = createNode(node_0);
+        printf("Inserted node from makeNode_1 on #%d\n", ast->node_count-1);
+        return &(ast->nodes[ast->node_count-1]);
     }
+    printf("Failed to insert node from makeNode_1");
+    return NULL;
+}
+
+Node* makeNode_2(AbstractSyntaxTree* ast, Node (*createNode)(Node* node_0, Node* node_1), Node* node_0, Node* node_1) {
+    if(ast->node_count < AST_MAX_NODES) {
+        ast->nodes[ast->node_count++] = createNode(node_0, node_1);
+        printf("Inserted node from makeNode_2 on #%d\n", ast->node_count-1);
+        return &(ast->nodes[ast->node_count-1]);
+    }
+    printf("Failed to insert node from makeNode_2");
+    return NULL;
+}
+
+Node* makeNode_3(AbstractSyntaxTree* ast, Node (*createNode)(Node* node_0, Node* node_1, Node* node_2), Node* node_0, Node* node_1, Node* node_2) {
+    if(ast->node_count < AST_MAX_NODES) {
+        ast->nodes[ast->node_count++] = createNode(node_0, node_1, node_2);
+        printf("Inserted node from makeNode_3 on #%d\n", ast->node_count-1);
+        return &(ast->nodes[ast->node_count-1]);
+    }
+    printf("Failed to insert node from makeNode_3");
+    return NULL;
+}
+
+Node* makeNode_0_INT(AbstractSyntaxTree* ast, Node (*createNode)(const int value), const int value) {
+    if(ast->node_count < AST_MAX_NODES) {
+        ast->nodes[ast->node_count++] = createNode(value);
+        printf("Inserted node from makeNode_0_INT on #%d\n", ast->node_count-1);
+        return &(ast->nodes[ast->node_count-1]);
+    }
+    printf("Failed to insert node from makeNode_0_INT");
+    return NULL;
+}
+
+Node* makeNode_0_DOUBLE(AbstractSyntaxTree* ast, Node (*createNode)(const double value), const double value) {
+    if(ast->node_count < AST_MAX_NODES) {
+        ast->nodes[ast->node_count++] = createNode(value);
+        printf("Inserted node from makeNode_0_DOUBLE on #%d\n", ast->node_count-1);
+        return &(ast->nodes[ast->node_count-1]);
+    }
+    printf("Failed to insert node from makeNode_0_DOUBLE");
+    return NULL;
 }

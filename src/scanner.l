@@ -23,14 +23,14 @@ IS			(u|U|l|L)*
 {L}({L}|{D})*		{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(IDENTIFIER); }
 
 
-0[xX]{H}+{IS}?		{ count(); return(CONSTANT); }
-0{D}+{IS}?		{ count(); return(CONSTANT); }
-{D}+{IS}?		{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(CONSTANT); }
-L?'(\\.|[^\\'])+'	{ count(); return(CONSTANT); }
+0[xX]{H}+{IS}?		{ count(); return(CONSTANT_INT); }
+0{D}+{IS}?		{ count(); return(CONSTANT_INT); }
+{D}+{IS}?		{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(CONSTANT_INT); }
+L?'(\\.|[^\\'])+'	{ count(); return(CONSTANT_INT); }
 
-{D}+{E}{FS}?		{ count(); return(CONSTANT); }
-{D}*"."{D}+({E})?{FS}?	{ count(); return(CONSTANT); }
-{D}+"."{D}*({E})?{FS}?	{ count(); return(CONSTANT); }
+{D}+{E}{FS}?		{ count(); return(CONSTANT_DOUBLE); }
+{D}*"."{D}+({E})?{FS}?	{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(CONSTANT_DOUBLE); }
+{D}+"."{D}*({E})?{FS}?	{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(CONSTANT_DOUBLE); }
 
 L?\"(\\.|[^\\"])*\"	{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(STRING_LITERAL); }
 
@@ -98,17 +98,18 @@ int yywrap()
 
 int column = 0;
 
-void count()
-{
-	int i;
-
-	for (i = 0; yytext[i] != '\0'; i++)
-		if (yytext[i] == '\n')
+void count() {
+	for (int i = 0; yytext[i] != '\0'; i++) {
+		if (yytext[i] == '\n') {
 			column = 0;
-		else if (yytext[i] == '\t')
+		}
+		else if (yytext[i] == '\t') {
 			column += 8 - (column % 8);
-		else
+		}
+		else {
 			column++;
+		}
+	}
 
 	//ECHO;
 }

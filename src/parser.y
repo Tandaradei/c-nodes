@@ -1,9 +1,15 @@
 %{
-	#include "src/ast.h"
 	#include <stdio.h>
 	#include <string.h>
+	#include <stdlib.h>
 
-	ast * root;
+	#include "src/ast.h"
+	#include "src/nodes/node_arithmetic.h"
+	#include "src/nodes/node_value.h"
+
+	AbstractSyntaxTree ast;
+	Node* root_node;
+
 int yylex();
 void yyerror(char *);
 %}
@@ -18,34 +24,34 @@ void yyerror(char *);
 %token STRUCT UNION ENUM ELLIPSIS
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
-%token<txt> CONSTANT IDENTIFIER STRING_LITERAL
-
-%union {char txt[256];  struct s_ast_node  * tree;}
-%type<tree> primary_expression expression assignment_expression conditional_expression unary_expression
-%type<tree> logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression
-%type<tree> and_expression equality_expression relational_expression shift_expression
-%type<tree> additive_expression multiplicative_expression cast_expression
-%type<tree> postfix_expression
+%token<txt> CONSTANT_INT CONSTANT_DOUBLE IDENTIFIER STRING_LITERAL
+%union {char txt[256]; struct Node* node;}
+%type<node> primary_expression expression assignment_expression conditional_expression unary_expression
+%type<node> logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression
+%type<node> and_expression equality_expression relational_expression shift_expression
+%type<node> additive_expression multiplicative_expression cast_expression
+%type<node> postfix_expression
 %type<txt> assignment_operator type_name unary_operator
 %%
-start	: expression {root = $1;}
+start	: expression {root_node = $1;}
 		;
 primary_expression
-	: IDENTIFIER			{$$ = new_node($1, NULL, NULL, NULL);}
-	| CONSTANT 				{$$ = new_node($1, NULL, NULL, NULL);}
-	| STRING_LITERAL		{$$ = new_node($1, NULL, NULL, NULL);}
+	: IDENTIFIER			{$$ = makeNode_0(&ast, createNode);}
+	| CONSTANT_INT 			{$$ = makeNode_0_INT(&ast, createNode_ValueInt, atoi($1));}
+	| CONSTANT_DOUBLE		{$$ = makeNode_0_DOUBLE(&ast, createNode_ValueDouble, atof($1));}
+	| STRING_LITERAL		{$$ = makeNode_0(&ast, createNode);}
 	| '(' expression ')'	{$$ = $2;}
 	;
 
 postfix_expression
-: primary_expression							{$$ = $1;}
-	| postfix_expression '[' expression ']'		{$$ = new_node("[]", $1, $3, NULL);}
-	| postfix_expression '(' ')'				{$$ = new_node("pf??", $1, NULL, NULL);} // ToDo
-	| postfix_expression '(' argument_expression_list ')'	{$$ = new_node("pf??", NULL, NULL, NULL);} // ToDo
-	| postfix_expression '.' IDENTIFIER			{$$ = new_node(".id", $1, NULL, NULL);} // ToDo
-	| postfix_expression PTR_OP IDENTIFIER		{$$ = new_node("->id", $1, NULL, NULL);}
-	| postfix_expression INC_OP					{$$ = new_node("++ (post)", $1, NULL, NULL);}
-	| postfix_expression DEC_OP					{$$ = new_node("-- (post)", $1, NULL, NULL);}
+: primary_expression										{$$ = $1;}
+	| postfix_expression '[' expression ']'					{$$ = makeNode_0(&ast, createNode);}
+	| postfix_expression '(' ')'							{$$ = makeNode_0(&ast, createNode);} // ToDo
+	| postfix_expression '(' argument_expression_list ')'	{$$ = makeNode_0(&ast, createNode);} // ToDo
+	| postfix_expression '.' IDENTIFIER						{$$ = makeNode_0(&ast, createNode);} // ToDo
+	| postfix_expression PTR_OP IDENTIFIER					{$$ = makeNode_0(&ast, createNode);}
+	| postfix_expression INC_OP								{$$ = makeNode_0(&ast, createNode);}
+	| postfix_expression DEC_OP								{$$ = makeNode_0(&ast, createNode);}
 	;
 
 argument_expression_list
@@ -55,11 +61,11 @@ argument_expression_list
 
 unary_expression
 : postfix_expression					{$$ = $1;}
-	| INC_OP unary_expression			{$$ = new_node("++ (prae)", $2, NULL, NULL);}
-	| DEC_OP unary_expression			{$$ = new_node("-- (prae)", $2, NULL, NULL);}
-	| unary_operator cast_expression	{$$ = new_node($1, $2, NULL, NULL);}
-	| SIZEOF unary_expression			{$$ = new_node("sizeof", $2, NULL, NULL);}
-	| SIZEOF '(' type_name ')'			{$$ = new_node("sizeof", NULL, NULL, NULL);} // ToDo
+	| INC_OP unary_expression			{$$ = makeNode_0(&ast, createNode);}
+	| DEC_OP unary_expression			{$$ = makeNode_0(&ast, createNode);}
+	| unary_operator cast_expression	{$$ = makeNode_0(&ast, createNode);}
+	| SIZEOF unary_expression			{$$ = makeNode_0(&ast, createNode);}
+	| SIZEOF '(' type_name ')'			{$$ = makeNode_0(&ast, createNode);} // ToDo
 	;
 
 unary_operator
@@ -73,75 +79,75 @@ unary_operator
 
 cast_expression
 	: unary_expression											{$$ = $1;}
-	| '(' type_name ')' cast_expression							{$$ = new_node("typecast", NULL, NULL, NULL);} // Todo!
+	| '(' type_name ')' cast_expression							{$$ = makeNode_0(&ast, createNode);} // Todo!
 	;
 
 multiplicative_expression
 	: cast_expression											{$$ = $1;}
-	| multiplicative_expression '*' cast_expression				{$$ = new_node("*", $1, $3, NULL);}
-	| multiplicative_expression '/' cast_expression				{$$ = new_node("/", $1, $3, NULL);}
-	| multiplicative_expression '%' cast_expression				{$$ = new_node("%", $1, $3, NULL);}
+	| multiplicative_expression '*' cast_expression				{$$ = makeNode_2(&ast, createNode_Mult, $1, $3);}
+	| multiplicative_expression '/' cast_expression				{$$ = makeNode_2(&ast, createNode_Divide, $1, $3);}
+	| multiplicative_expression '%' cast_expression				{$$ = makeNode_0(&ast, createNode);}
 	;
 
 additive_expression
 	: multiplicative_expression									{$$ = $1;}
-	| additive_expression '+' multiplicative_expression			{$$ = new_node("+", $1, $3, NULL);}
-	| additive_expression '-' multiplicative_expression			{$$ = new_node("-", $1, $3, NULL);}
+	| additive_expression '+' multiplicative_expression			{$$ = makeNode_2(&ast, createNode_Plus, $1, $3);}
+	| additive_expression '-' multiplicative_expression			{$$ = makeNode_2(&ast, createNode_Sub, $1, $3);}
 	;
 
 shift_expression
 	: additive_expression										{$$ = $1;}
-	| shift_expression LEFT_OP additive_expression				{$$ = new_node("<<", $1, $3, NULL);}
-	| shift_expression RIGHT_OP additive_expression				{$$ = new_node(">>", $1, $3, NULL);}
+	| shift_expression LEFT_OP additive_expression				{$$ = makeNode_0(&ast, createNode);}
+	| shift_expression RIGHT_OP additive_expression				{$$ = makeNode_0(&ast, createNode);}
 	;
 
 relational_expression
 	: shift_expression											{$$ = $1;}
-	| relational_expression '<' shift_expression				{$$ = new_node("<", $1, $3, NULL);}
-	| relational_expression '>' shift_expression				{$$ = new_node(">", $1, $3, NULL);}
-	| relational_expression LE_OP shift_expression				{$$ = new_node("<=", $1, $3, NULL);}
-	| relational_expression GE_OP shift_expression				{$$ = new_node(">=", $1, $3, NULL);}
+	| relational_expression '<' shift_expression				{$$ = makeNode_0(&ast, createNode);}
+	| relational_expression '>' shift_expression				{$$ = makeNode_0(&ast, createNode);}
+	| relational_expression LE_OP shift_expression				{$$ = makeNode_0(&ast, createNode);}
+	| relational_expression GE_OP shift_expression				{$$ = makeNode_0(&ast, createNode);}
 	;
 
 equality_expression
 	: relational_expression										{$$ = $1;}
-	| equality_expression EQ_OP relational_expression			{$$ = new_node("==", $1, $3, NULL);}
-	| equality_expression NE_OP relational_expression			{$$ = new_node("!0", $1, $3, NULL);}
+	| equality_expression EQ_OP relational_expression			{$$ = makeNode_0(&ast, createNode);}
+	| equality_expression NE_OP relational_expression			{$$ = makeNode_0(&ast, createNode);}
 	;
 
 and_expression
 	: equality_expression										{$$ = $1;}
-	| and_expression '&' equality_expression					{$$ = new_node("&", $1, $3, NULL);}
+	| and_expression '&' equality_expression					{$$ = makeNode_0(&ast, createNode);}
 	;
 
 exclusive_or_expression
 	: and_expression											{$$ = $1;}
-	| exclusive_or_expression '^' and_expression				{$$ = new_node("^", $1, $3, NULL);}
+	| exclusive_or_expression '^' and_expression				{$$ = makeNode_0(&ast, createNode);}
 	;
 
 inclusive_or_expression
 	: exclusive_or_expression									{$$ = $1;}
-	| inclusive_or_expression '|' exclusive_or_expression		{$$ = new_node("|", $1, $3, NULL);}
+	| inclusive_or_expression '|' exclusive_or_expression		{$$ = makeNode_0(&ast, createNode);}
 	;
 
 logical_and_expression
 	: inclusive_or_expression									{$$ = $1;}
-	| logical_and_expression AND_OP inclusive_or_expression		{$$ = new_node("&&", $1, $3, NULL);}
+	| logical_and_expression AND_OP inclusive_or_expression		{$$ = makeNode_0(&ast, createNode);}
 	;
 
 logical_or_expression
 	: logical_and_expression									{$$ = $1;}
-	| logical_or_expression OR_OP logical_and_expression		{$$ = new_node("||", $1, $3, NULL);}
+	| logical_or_expression OR_OP logical_and_expression		{$$ = makeNode_0(&ast, createNode);}
 	;
 
 conditional_expression
 	: logical_or_expression 											{$$ = $1;}
-	| logical_or_expression '?' expression ':' conditional_expression 	{$$ = new_node("?:", $3, $5, $1);}
+	| logical_or_expression '?' expression ':' conditional_expression 	{$$ = makeNode_0(&ast, createNode);}
 	;
 
 assignment_expression
 	: conditional_expression										{$$ = $1;}
-	| unary_expression assignment_operator assignment_expression 	{$$ = new_node($2, $1, $3, NULL);}
+	| unary_expression assignment_operator assignment_expression 	{$$ = makeNode_2(&ast, createNode_BasicBinary, $1, $3);}
 	;
 
 assignment_operator
@@ -160,7 +166,7 @@ assignment_operator
 
 expression
 	: assignment_expression 				{$$ = $1;}
-	| expression ',' assignment_expression 	{$$ = new_node(",", $1, $3, NULL);}
+	| expression ',' assignment_expression 	{$$ = makeNode_0(&ast, createNode);}
 	;
 
 type_name
@@ -169,6 +175,8 @@ type_name
 	;
 %%
 #include <stdio.h>
+
+#include "src/ast.h"
 
 extern char yytext[];
 extern int column;
@@ -182,13 +190,18 @@ char *s;
 
 int yyparse();
 int main(unsigned int argc, char** argv) {
-	root = NULL;
 	for(unsigned int i = 1; i < argc; i++) {
 		yy_scan_string(argv[i]);
 		int rc = yyparse();
 		if (rc == 0) {
-			tree_output(root, 0);
-			tree_tikz(root, 0);
+			printf("# nodes: %d\n", ast.node_count);
+			processNode(root_node);
+			printf("Basic syntax tree:\n");
+			printNodeRecursively_Basic(root_node, 0);
+			printf("Enhanced syntax tree:\n");
+			printNodeRecursively_Enhanced(root_node, 0);
+			//tree_output(root, 0);
+			//tree_tikz(root, 0);
 		}
 		else {
 			printf("Syntaxfehler\n");

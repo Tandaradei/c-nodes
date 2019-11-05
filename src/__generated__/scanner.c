@@ -840,38 +840,38 @@ YY_RULE_SETUP
 case 4:
 YY_RULE_SETUP
 #line 26 "C:/Users/Laurin/source/repos/c-nodes/src/scanner.l"
-{ count(); return(CONSTANT); }
+{ count(); return(CONSTANT_INT); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 27 "C:/Users/Laurin/source/repos/c-nodes/src/scanner.l"
-{ count(); return(CONSTANT); }
+{ count(); return(CONSTANT_INT); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 28 "C:/Users/Laurin/source/repos/c-nodes/src/scanner.l"
-{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(CONSTANT); }
+{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(CONSTANT_INT); }
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
 #line 29 "C:/Users/Laurin/source/repos/c-nodes/src/scanner.l"
-{ count(); return(CONSTANT); }
+{ count(); return(CONSTANT_INT); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 31 "C:/Users/Laurin/source/repos/c-nodes/src/scanner.l"
-{ count(); return(CONSTANT); }
+{ count(); return(CONSTANT_DOUBLE); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 32 "C:/Users/Laurin/source/repos/c-nodes/src/scanner.l"
-{ count(); return(CONSTANT); }
+{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(CONSTANT_DOUBLE); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 33 "C:/Users/Laurin/source/repos/c-nodes/src/scanner.l"
-{ count(); return(CONSTANT); }
+{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(CONSTANT_DOUBLE); }
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
@@ -2146,17 +2146,18 @@ int yywrap()
 
 int column = 0;
 
-void count()
-{
-	int i;
-
-	for (i = 0; yytext[i] != '\0'; i++)
-		if (yytext[i] == '\n')
+void count() {
+	for (int i = 0; yytext[i] != '\0'; i++) {
+		if (yytext[i] == '\n') {
 			column = 0;
-		else if (yytext[i] == '\t')
+		}
+		else if (yytext[i] == '\t') {
 			column += 8 - (column % 8);
-		else
+		}
+		else {
 			column++;
+		}
+	}
 
 	//ECHO;
 }

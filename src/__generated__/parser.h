@@ -101,9 +101,10 @@ extern int yydebug;
      CONTINUE = 310,
      BREAK = 311,
      RETURN = 312,
-     CONSTANT = 313,
-     IDENTIFIER = 314,
-     STRING_LITERAL = 315
+     CONSTANT_INT = 313,
+     CONSTANT_DOUBLE = 314,
+     IDENTIFIER = 315,
+     STRING_LITERAL = 316
    };
 #endif
 
@@ -112,11 +113,11 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 23 "C:/Users/Laurin/source/repos/c-nodes/src/parser.y"
-char txt[256];  struct s_ast_node  * tree;
+#line 28 "C:/Users/Laurin/source/repos/c-nodes/src/parser.y"
+char txt[256]; struct Node* node;
 
 /* Line 2058 of yacc.c  */
-#line 120 "C:/Users/Laurin/source/repos/c-nodes/src/__generated__/parser.h"
+#line 121 "C:/Users/Laurin/source/repos/c-nodes/src/__generated__/parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

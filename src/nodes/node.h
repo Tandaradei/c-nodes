@@ -2,11 +2,12 @@
 #define NODE_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef enum ValueType {
-    ERROR = 0,
-    INT = 1,
-    DOUBLE = 2,
+    VT_ERROR = 0,
+    VT_INT = 1,
+    VT_DOUBLE = 2,
 } ValueType;
 
 typedef struct Node Node;
@@ -42,7 +43,13 @@ typedef struct Node {
     NodeIn in;
     NodeOut out;
     bool (*processNode)(const NodeIn node_in, NodeOut* node_out);
+    char text[20];
 } Node;
+
+
+Node createNode(void);
+
+Node createNode_BasicBinary(Node* node_0, Node* node_1);
 
 bool checkNode(const NodeIn node_in);
 
@@ -55,5 +62,8 @@ double getAsDouble(const NodeOut node_out);
 
 void printNodeValue(const NodeOut node_out);
 void printNodeType(const NodeOut node_out);
+
+void printNodeRecursively_Basic(const Node* node, const uint8_t depth);
+void printNodeRecursively_Enhanced(const Node* node, const uint8_t depth);
 
 #endif // NODE_H

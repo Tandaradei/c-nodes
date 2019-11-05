@@ -51,9 +51,9 @@ INCLUDE_DIRECTORIES("${BASEPATH}")
 
 add_executable(${PROJECT_NAME}
     #src/main.c
-    #src/nodes/node.c
-    #src/nodes/node_value.c
+    src/ast.c
+    src/nodes/node.c
+    src/nodes/node_value.c
     src/__generated__/scanner.c
     src/__generated__/parser.c
-    src/ast.c
 )
