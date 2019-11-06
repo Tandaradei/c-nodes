@@ -4,10 +4,11 @@
 	#include <stdlib.h>
 
 	#include "src/ast.h"
-	#include "src/nodes/node_arithmetic.h"
-	#include "src/nodes/node_value.h"
+	#include "src/symtab.h"
+	#include "src/nodes/nodes_list.h"
 
 	AbstractSyntaxTree ast;
+	SymbolTable sym_tab;
 	Node* root_node;
 
 int yylex();
@@ -36,7 +37,7 @@ void yyerror(char *);
 start	: expression {root_node = $1;}
 		;
 primary_expression
-	: IDENTIFIER			{$$ = makeNode_0(&ast, createNode);}
+	: IDENTIFIER			{Node* node = makeNode_0_STRING(&ast, createNode_GetVariableValue, $1); node->additional_info = &sym_tab; $$ = node;}
 	| CONSTANT_INT 			{$$ = makeNode_0_INT(&ast, createNode_ValueInt, atoi($1));}
 	| CONSTANT_DOUBLE		{$$ = makeNode_0_DOUBLE(&ast, createNode_ValueDouble, atof($1));}
 	| STRING_LITERAL		{$$ = makeNode_0(&ast, createNode);}
@@ -147,7 +148,7 @@ conditional_expression
 
 assignment_expression
 	: conditional_expression										{$$ = $1;}
-	| unary_expression assignment_operator assignment_expression 	{$$ = makeNode_2(&ast, createNode_BasicBinary, $1, $3);}
+	| unary_expression assignment_operator assignment_expression 	{$$ = makeNode_1_STRING(&ast, createNode_UpdateVariableValue, $3, $1);}
 	;
 
 assignment_operator
@@ -190,6 +191,24 @@ char *s;
 
 int yyparse();
 int main(unsigned int argc, char** argv) {
+	addSymbol(
+		&sym_tab, 
+		"a", 
+		(SymbolValue) {
+			.type = VT_INT,
+			.value.i_value = 9,
+			.is_const = false,
+		}
+	);
+	addSymbol(
+		&sym_tab, 
+		"b", 
+		(SymbolValue) {
+			.type = VT_DOUBLE,
+			.value.d_value = 15.023,
+			.is_const = true,
+		}
+	);
 	for(unsigned int i = 1; i < argc; i++) {
 		yy_scan_string(argv[i]);
 		int rc = yyparse();

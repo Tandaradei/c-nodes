@@ -4,11 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-typedef enum ValueType {
-    VT_ERROR = 0,
-    VT_INT = 1,
-    VT_DOUBLE = 2,
-} ValueType;
+#include "src/values.h"
 
 typedef struct Node Node;
 
@@ -17,10 +13,6 @@ typedef struct InSlot {
     const unsigned int allowed_value_types;
 } InSlot;
 
-typedef union Value {
-    int i_value;
-    double d_value;
-} Value;
 
 typedef struct NodeIn {
     union {
@@ -42,8 +34,9 @@ typedef struct NodeOut {
 typedef struct Node {
     NodeIn in;
     NodeOut out;
-    bool (*processNode)(const NodeIn node_in, NodeOut* node_out);
+    bool (*processNode)(Node* node);
     char text[20];
+    void* additional_info;
 } Node;
 
 

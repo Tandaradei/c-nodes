@@ -3,3 +3,4 @@ part*
 .vscode/**
 *.exe
 build/**
+src/__generated__/**

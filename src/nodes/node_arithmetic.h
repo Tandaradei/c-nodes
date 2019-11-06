@@ -5,16 +5,16 @@
 #include "node.h"
 
 #define NODE_ARITHMETIC(OPERATOR, NAME) \
-bool processNode_##NAME(const NodeIn node_in, NodeOut* node_out) {\
-    if(checkNode(node_in)) {\
-        ValueType type = getHighestValueType(node_in);\
-        node_out->type = type;\
+bool processNode_##NAME(Node* node) {\
+    if(checkNode(node->in)) {\
+        ValueType type = getHighestValueType(node->in);\
+        node->out.type = type;\
         switch (type) {\
             case VT_INT:\
-                node_out->value.i_value = node_in.slot[0].node->out.value.i_value OPERATOR node_in.slot[1].node->out.value.i_value;\
+                node->out.value.i_value = node->in.slot[0].node->out.value.i_value OPERATOR node->in.slot[1].node->out.value.i_value;\
                 break;\
             case VT_DOUBLE:\
-                 node_out->value.d_value = getAsDouble(node_in.slot[0].node->out) OPERATOR getAsDouble(node_in.slot[1].node->out);\
+                 node->out.value.d_value = getAsDouble(node->in.slot[0].node->out) OPERATOR getAsDouble(node->in.slot[1].node->out);\
                 break;\
             default:\
                 break; \
@@ -22,7 +22,7 @@ bool processNode_##NAME(const NodeIn node_in, NodeOut* node_out) {\
         return true;\
     }\
     else {\
-        node_out->type = VT_ERROR;\
+        node->out.type = VT_ERROR;\
         return false;\
     }\
 }\
@@ -39,7 +39,8 @@ Node createNode_##NAME##_Empty() { \
             .value.i_value = 0 \
         }, \
         .processNode = processNode_##NAME, \
-        .text = #OPERATOR,\
+        .text = #OPERATOR, \
+        .additional_info = NULL,\
     }; \
 } \
 \

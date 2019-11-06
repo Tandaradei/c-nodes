@@ -61,3 +61,23 @@ Node* makeNode_0_DOUBLE(AbstractSyntaxTree* ast, Node (*createNode)(const double
     printf("Failed to insert node from makeNode_0_DOUBLE");
     return NULL;
 }
+
+Node* makeNode_0_STRING(AbstractSyntaxTree* ast, Node (*createNode)(const char* value), const char* value) {
+    if(ast->node_count < AST_MAX_NODES) {
+        ast->nodes[ast->node_count++] = createNode(value);
+        printf("Inserted node from makeNode_0_STRING (%s) on #%d\n", value, ast->node_count-1);
+        return &(ast->nodes[ast->node_count-1]);
+    }
+    printf("Failed to insert node from makeNode_0_STRING");
+    return NULL;
+}
+
+Node* makeNode_1_STRING(AbstractSyntaxTree* ast, Node (*createNode)(Node* node_0, const char* value), Node* node_0, const char* value) {
+    if(ast->node_count < AST_MAX_NODES) {
+        ast->nodes[ast->node_count++] = createNode(node_0, value);
+        printf("Inserted node from makeNode_1_STRING on #%d\n", ast->node_count-1);
+        return &(ast->nodes[ast->node_count-1]);
+    }
+    printf("Failed to insert node from makeNode_1_STRING");
+    return NULL;
+}

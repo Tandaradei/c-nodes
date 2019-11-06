@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-bool processNodeDefault(const NodeIn node_in, NodeOut* node_out) {
+bool processNodeDefault(Node* node) {
     return true;
 }
 
@@ -18,6 +18,7 @@ Node createNode(void) {
         },
         .processNode = processNodeDefault,
         .text = "Default",
+        .additional_info = NULL,
     };
 }
 
@@ -40,6 +41,7 @@ Node createNode_BasicBinary(Node* node_0, Node* node_1) {
         },
         .processNode = processNodeDefault,
         .text = "BasicBinary",
+        .additional_info = NULL,
     };
 }
 
@@ -72,7 +74,7 @@ bool processNode(Node* node) {
             }
         }
         if(all_ins_valid && node->processNode) {
-            return node->processNode(node->in, &node->out);
+            return node->processNode(node);
         }
     }
     return false;
