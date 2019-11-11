@@ -4,3 +4,7 @@ part*
 *.exe
 build/**
 src/__generated__/**
+Makefile
+CMakeCache.txt
+cmake_install.cmake
+CMakeFiles/**

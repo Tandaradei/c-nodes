@@ -1,17 +1,29 @@
 cmake_minimum_required(VERSION 3.0)
 
 project(c-nodes)
+if(WIN32)
+    find_program(LEX_EXE
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools/win_flex_bison/win_flex
+    )
 
-find_program(LEX_EXE
-    ${CMAKE_CURRENT_SOURCE_DIR}/tools/win_flex_bison/win_flex
-)
+    find_program(YACC_EXE
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools/win_flex_bison/win_bison
+    )
+endif(WIN32)
+if(UNIX)
+    find_program(LEX_EXE
+        flex
+    )
+
+    find_program(YACC_EXE
+        bison
+    )
+endif(UNIX)
+
 if(LEX_EXE STREQUAL "LEX_EXE-NOTFOUND")
     message(FATAL_ERROR "dear user, please install flex!")
 endif(LEX_EXE STREQUAL "LEX_EXE-NOTFOUND")
 
-find_program(YACC_EXE
-    ${CMAKE_CURRENT_SOURCE_DIR}/tools/win_flex_bison/win_bison
-)
 if(YACC_EXE STREQUAL "YACC_EXE-NOTFOUND")
     message(FATAL_ERROR "dear user, please install bison!")
 endif(YACC_EXE STREQUAL "YACC_EXE-NOTFOUND")

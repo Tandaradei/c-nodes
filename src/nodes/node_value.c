@@ -21,7 +21,7 @@ Node createNode_ValueInt(const int value) {
         .processNode = processNode_Value,
         .additional_info = NULL,
     };
-    strcpy_s(node.text, 20, converted_value);
+    strcpy(node.text, converted_value);
     return node;
 }
 
@@ -39,6 +39,6 @@ Node createNode_ValueDouble(const double value) {
         .processNode = processNode_Value,
         .additional_info = NULL,
     };
-    strcpy_s(node.text, 20, converted_value);
+    strcpy(node.text, converted_value);
     return node;
 }

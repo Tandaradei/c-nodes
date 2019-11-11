@@ -10,7 +10,7 @@ typedef struct Node Node;
 
 typedef struct InSlot {
     Node* node;
-    const unsigned int allowed_value_types;
+    unsigned int allowed_value_types;
 } InSlot;
 
 
@@ -23,7 +23,7 @@ typedef struct NodeIn {
         };
         InSlot slot[3];
     };
-    const unsigned int slot_count;
+    unsigned int slot_count;
 } NodeIn;
 
 typedef struct NodeOut {

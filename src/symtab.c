@@ -12,7 +12,7 @@ AddSymbol_Result addSymbol(SymbolTable* sym_tab, const char* identifier, SymbolV
         }
     }
     uint8_t i = sym_tab->symbol_count++;
-    strcpy_s(sym_tab->identifiers[i], 20, identifier);
+    strcpy(sym_tab->identifiers[i], identifier);
     sym_tab->values[i] = value;
     return ASR_SUCCESS;
 }

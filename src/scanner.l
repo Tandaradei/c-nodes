@@ -5,6 +5,8 @@ void count();
 void comment();
 int yywrap();
 #include <stdio.h>
+#include <string.h>
+
 #include "parser.h"
 #include "src/ast.h"
 %}
@@ -20,19 +22,19 @@ IS			(u|U|l|L)*
 "double"		{ count(); return(DOUBLE); }
 "int"			{ count(); return(INT); }
 
-{L}({L}|{D})*		{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(IDENTIFIER); }
+{L}({L}|{D})*		{ count(); strncpy(yylval.txt, yytext, 256); return(IDENTIFIER); }
 
 
 0[xX]{H}+{IS}?		{ count(); return(CONSTANT_INT); }
 0{D}+{IS}?		{ count(); return(CONSTANT_INT); }
-{D}+{IS}?		{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(CONSTANT_INT); }
+{D}+{IS}?		{ count(); strncpy(yylval.txt, yytext, 256); return(CONSTANT_INT); }
 L?'(\\.|[^\\'])+'	{ count(); return(CONSTANT_INT); }
 
 {D}+{E}{FS}?		{ count(); return(CONSTANT_DOUBLE); }
-{D}*"."{D}+({E})?{FS}?	{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(CONSTANT_DOUBLE); }
-{D}+"."{D}*({E})?{FS}?	{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(CONSTANT_DOUBLE); }
+{D}*"."{D}+({E})?{FS}?	{ count(); strncpy(yylval.txt, yytext, 256); return(CONSTANT_DOUBLE); }
+{D}+"."{D}*({E})?{FS}?	{ count(); strncpy(yylval.txt, yytext, 256); return(CONSTANT_DOUBLE); }
 
-L?\"(\\.|[^\\"])*\"	{ count(); strncpy_s(yylval.txt, sizeof yylval.txt, yytext, 256); return(STRING_LITERAL); }
+L?\"(\\.|[^\\"])*\"	{ count(); strncpy(yylval.txt, yytext, 256); return(STRING_LITERAL); }
 
 "..."			{ count(); return(ELLIPSIS); }
 ">>="			{ count(); return(RIGHT_ASSIGN); }

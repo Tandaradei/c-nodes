@@ -1,5 +1,8 @@
 #include "node_variable.h"
 
+#include <stddef.h>
+#include <string.h>
+
 #include "src/symtab.h"
 
 bool processNode_GetVariableValue(Node* node) {
@@ -25,7 +28,7 @@ Node createNode_GetVariableValue(const char* identifier) {
         .processNode = processNode_GetVariableValue,
         .additional_info = NULL,
     };
-    strcpy_s(node.text, 20, identifier);
+    strcpy(node.text, identifier);
     return node;
 }
 
@@ -56,7 +59,7 @@ bool processNode_UpdateVariableValue(Node* node) {
 }
 
 
-Node createNode_UpdateVariableValue(const char* identifier, Node* node_0) {
+Node createNode_UpdateVariableValue(Node* node_0, const char* identifier) {
     Node node = {
         .in = {
             .slot_count = 1,
@@ -72,6 +75,6 @@ Node createNode_UpdateVariableValue(const char* identifier, Node* node_0) {
         .processNode = processNode_UpdateVariableValue,
         .additional_info = NULL,
     };
-    strcpy_s(node.text, 20, identifier);
+    strcpy(node.text, identifier);
     return node;
 }

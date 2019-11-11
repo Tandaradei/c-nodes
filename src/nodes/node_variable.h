@@ -7,6 +7,6 @@ bool processNode_GetVariableValue(Node* node);
 Node createNode_GetVariableValue(const char* identifier);
 
 bool processNode_UpdateVariableValue(Node* node);
-Node createNode_UpdateVariableValue(const char* identifier, Node* node_0);
+Node createNode_UpdateVariableValue(Node* node_0, const char* identifier);
 
 #endif // NODE_VARIABLE_H

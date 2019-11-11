@@ -70,12 +70,12 @@ unary_expression
 	;
 
 unary_operator
-	: '&'		{strcpy_s($$, sizeof $$, "&");}
-	| '*'		{strcpy_s($$, sizeof $$, "*");}
-	| '+'		{strcpy_s($$, sizeof $$, "+");}
-	| '-'		{strcpy_s($$, sizeof $$, "-");}
-	| '~'		{strcpy_s($$, sizeof $$, "~");}
-	| '!'		{strcpy_s($$, sizeof $$, "!");}
+	: '&'		{strcpy($$, "&");}
+	| '*'		{strcpy($$, "*");}
+	| '+'		{strcpy($$, "+");}
+	| '-'		{strcpy($$, "-");}
+	| '~'		{strcpy($$, "~");}
+	| '!'		{strcpy($$, "!");}
 	;
 
 cast_expression
@@ -152,17 +152,17 @@ assignment_expression
 	;
 
 assignment_operator
-	: '='					{strcpy_s($$, sizeof $$, "=");}
-	| MUL_ASSIGN			{strcpy_s($$, sizeof $$, "*=");}
-	| DIV_ASSIGN			{strcpy_s($$, sizeof $$, "/=");}
-	| MOD_ASSIGN			{strcpy_s($$, sizeof $$, "%=");}
-	| ADD_ASSIGN			{strcpy_s($$, sizeof $$, "+=");}
-	| SUB_ASSIGN			{strcpy_s($$, sizeof $$, "-=");}
-	| LEFT_ASSIGN			{strcpy_s($$, sizeof $$, "<<=");}
-	| RIGHT_ASSIGN			{strcpy_s($$, sizeof $$, ">>=");}
-	| AND_ASSIGN			{strcpy_s($$, sizeof $$, "&=");}
-	| XOR_ASSIGN			{strcpy_s($$, sizeof $$, "|=");}
-	| OR_ASSIGN				{strcpy_s($$, sizeof $$, "^=");}
+	: '='					{strcpy($$, "=");}
+	| MUL_ASSIGN			{strcpy($$, "*=");}
+	| DIV_ASSIGN			{strcpy($$, "/=");}
+	| MOD_ASSIGN			{strcpy($$, "%=");}
+	| ADD_ASSIGN			{strcpy($$, "+=");}
+	| SUB_ASSIGN			{strcpy($$, "-=");}
+	| LEFT_ASSIGN			{strcpy($$, "<<=");}
+	| RIGHT_ASSIGN			{strcpy($$, ">>=");}
+	| AND_ASSIGN			{strcpy($$, "&=");}
+	| XOR_ASSIGN			{strcpy($$, "|=");}
+	| OR_ASSIGN				{strcpy($$, "^=");}
 	;
 
 expression
@@ -171,8 +171,8 @@ expression
 	;
 
 type_name
-	: INT					{strcpy_s($$, sizeof $$, "int");}
-	| DOUBLE				{strcpy_s($$, sizeof $$, "double");}
+	: INT					{strcpy($$, "int");}
+	| DOUBLE				{strcpy($$, "double");}
 	;
 %%
 #include <stdio.h>
