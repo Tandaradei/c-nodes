@@ -62,7 +62,6 @@ YACC_FILE(src/parser.y)
 INCLUDE_DIRECTORIES("${BASEPATH}")
 
 add_executable(${PROJECT_NAME}
-    #src/main.c
     src/ast.c
     src/symtab.c
     src/nodes/node.c
