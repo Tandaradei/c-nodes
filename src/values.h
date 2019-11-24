@@ -12,4 +12,6 @@ typedef union Value {
     double d_value;
 } Value;
 
+const char* getColorForValueType(ValueType value_type);
+
 #endif // VALUES_H

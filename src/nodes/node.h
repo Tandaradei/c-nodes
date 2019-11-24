@@ -3,14 +3,17 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "src/values.h"
+#include "src/symtab.h"
 
 typedef struct Node Node;
 
 typedef struct InSlot {
     Node* node;
     unsigned int allowed_value_types;
+    bool allow_rvalues;
 } InSlot;
 
 
@@ -27,8 +30,9 @@ typedef struct NodeIn {
 } NodeIn;
 
 typedef struct NodeOut {
-    ValueType type;
-    Value     value;
+    ValueType   type;
+    Value       value;
+    bool        is_lvalue;
 } NodeOut;
 
 typedef struct Node {
@@ -37,6 +41,7 @@ typedef struct Node {
     bool (*processNode)(Node* node);
     char text[20];
     void* additional_info;
+    SymbolHandle symbol_handle;
 } Node;
 
 
@@ -50,13 +55,16 @@ ValueType getHighestValueType(const NodeIn node_in);
 
 bool processNode(Node* node);
 
-int getAsInt(const NodeOut node_out);
-double getAsDouble(const NodeOut node_out);
+int getAsInt(const Node* node);
+double getAsDouble(const Node* node);
 
 void printNodeValue(const NodeOut node_out);
+void printNodeValue_File(FILE* file, const Node* node);
 void printNodeType(const NodeOut node_out);
 
 void printNodeRecursively_Basic(const Node* node, const uint8_t depth);
 void printNodeRecursively_Enhanced(const Node* node, const uint8_t depth);
+
+void printNodeRecursively_Tikz(FILE* file, const Node* node, const uint8_t depth);
 
 #endif // NODE_H

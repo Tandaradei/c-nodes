@@ -15,6 +15,10 @@ typedef struct SymbolValue {
     bool is_const;
 } SymbolValue;
 
+typedef struct SymbolHandle {
+    uint8_t value;
+} SymbolHandle;
+
 typedef struct SymbolTable {
     char identifiers[MAX_SYMBOL_LENGTH][MAX_SYMBOLS];
     SymbolValue values[MAX_SYMBOLS];
@@ -29,7 +33,8 @@ typedef enum AddSymbol_Result {
 
 AddSymbol_Result addSymbol(SymbolTable* sym_tab, const char* identifier, SymbolValue value);
 
-SymbolValue getSymbolValue(const SymbolTable* sym_tab, const char* identifier);
+SymbolHandle    getSymbolHandle(const SymbolTable* sym_tab, const char* identifier);
+SymbolValue     getSymbolValue(const SymbolTable* sym_tab, const SymbolHandle handle);
 
 typedef enum UpdateSymbolValue_Result {
     USVR_SUCCESS,
@@ -38,7 +43,7 @@ typedef enum UpdateSymbolValue_Result {
     USVR_IS_CONST
 } UpdateSymbolValue_Result;
 
-UpdateSymbolValue_Result updateSymbolValue_Int(SymbolTable* sym_tab, const char* identifier, const int value);
-UpdateSymbolValue_Result updateSymbolValue_Double(SymbolTable* sym_tab, const char* identifier, const double value);
+UpdateSymbolValue_Result updateSymbolValue_Int(SymbolTable* sym_tab, const SymbolHandle handle, const int value);
+UpdateSymbolValue_Result updateSymbolValue_Double(SymbolTable* sym_tab, const SymbolHandle handle, const double value);
 
 #endif // SYMTAB_H

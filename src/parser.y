@@ -37,7 +37,7 @@ void yyerror(char *);
 start	: expression {root_node = $1;}
 		;
 primary_expression
-	: IDENTIFIER			{Node* node = makeNode_0_STRING(&ast, createNode_GetVariableValue, $1); node->additional_info = &sym_tab; $$ = node;}
+	: IDENTIFIER			{Node* node = makeNode_0_STRING(&ast, createNode_GetSymbol, $1); node->additional_info = &sym_tab; $$ = node;}
 	| CONSTANT_INT 			{$$ = makeNode_0_INT(&ast, createNode_ValueInt, atoi($1));}
 	| CONSTANT_DOUBLE		{$$ = makeNode_0_DOUBLE(&ast, createNode_ValueDouble, atof($1));}
 	| STRING_LITERAL		{$$ = makeNode_0(&ast, createNode);}
@@ -51,8 +51,8 @@ postfix_expression
 	| postfix_expression '(' argument_expression_list ')'	{$$ = makeNode_0(&ast, createNode);} // ToDo
 	| postfix_expression '.' IDENTIFIER						{$$ = makeNode_0(&ast, createNode);} // ToDo
 	| postfix_expression PTR_OP IDENTIFIER					{$$ = makeNode_0(&ast, createNode);}
-	| postfix_expression INC_OP								{$$ = makeNode_0(&ast, createNode);}
-	| postfix_expression DEC_OP								{$$ = makeNode_0(&ast, createNode);}
+	| postfix_expression INC_OP								{$$ = makeNode_1(&ast, createNode_IncrementPost, $1);}
+	| postfix_expression DEC_OP								{$$ = makeNode_1(&ast, createNode_DecrementPost, $1);}
 	;
 
 argument_expression_list
@@ -62,8 +62,8 @@ argument_expression_list
 
 unary_expression
 : postfix_expression					{$$ = $1;}
-	| INC_OP unary_expression			{$$ = makeNode_0(&ast, createNode);}
-	| DEC_OP unary_expression			{$$ = makeNode_0(&ast, createNode);}
+	| INC_OP unary_expression			{$$ = makeNode_1(&ast, createNode_IncrementPre, $2);}
+	| DEC_OP unary_expression			{$$ = makeNode_1(&ast, createNode_DecrementPre, $2);}
 	| unary_operator cast_expression	{$$ = makeNode_0(&ast, createNode);}
 	| SIZEOF unary_expression			{$$ = makeNode_0(&ast, createNode);}
 	| SIZEOF '(' type_name ')'			{$$ = makeNode_0(&ast, createNode);} // ToDo
@@ -148,7 +148,7 @@ conditional_expression
 
 assignment_expression
 	: conditional_expression										{$$ = $1;}
-	| unary_expression assignment_operator assignment_expression 	{$$ = makeNode_1_STRING(&ast, createNode_UpdateVariableValue, $3, $1);}
+	| unary_expression assignment_operator assignment_expression 	{$$ = makeNode_0(&ast, createNode);}
 	;
 
 assignment_operator
@@ -219,6 +219,11 @@ int main(unsigned int argc, char** argv) {
 			printNodeRecursively_Basic(root_node, 0);
 			printf("Enhanced syntax tree:\n");
 			printNodeRecursively_Enhanced(root_node, 0);
+			FILE* file = fopen("output.tex", "w");
+			fprintf(file, "\\documentclass[border=10pt]{standalone}\n\\usepackage{tikz}\n\\begin{document}\n\\begin{tikzpicture}[sibling distance=10em, every node/.style = {shape=rectangle, rounded corners, draw, align=center}]]\n\\");
+			printNodeRecursively_Tikz(file, root_node, 0);
+			fprintf(file, ";\n\\end{tikzpicture}\n\\end{document}");
+			fclose(file);
 			//tree_output(root, 0);
 			//tree_tikz(root, 0);
 		}

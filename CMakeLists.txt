@@ -59,13 +59,17 @@ SET(BASEPATH "${CMAKE_SOURCE_DIR}")
 LEX_FILE(src/scanner.l)
 YACC_FILE(src/parser.y)
 
+SET(CMAKE_C_COMPILE_FEATURES "_CRT_SECURE_NO_WARNINGS")
+
 INCLUDE_DIRECTORIES("${BASEPATH}")
 
 add_executable(${PROJECT_NAME}
     src/ast.c
     src/symtab.c
+    src/values.c
     src/nodes/node.c
     src/nodes/node_value.c
+    src/nodes/node_integer_ops.c
     src/nodes/node_variable.c
     src/__generated__/scanner.c
     src/__generated__/parser.c
