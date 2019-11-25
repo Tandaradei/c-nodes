@@ -46,15 +46,15 @@ bool processNode_Assign(Node* node) {
     const SymbolHandle handle = node->in.slot_0.node->symbol_handle;
     ValueType type = node->in.slot_0.node->out.type;
     UpdateSymbolValue_Result result = USVR_SUCCESS;
+    int i_value = getAsInt(node->in.slot_1.node);
+    double d_value = getAsDouble(node->in.slot_1.node);
     switch(type) {
         case VT_INT:
-            int i_value = getAsInt(node->in.slot_1.node);
             result = updateSymbolValue_Int(sym_tab, handle, i_value);
             node->out.value.i_value = i_value;
             node->out.type = VT_INT;
             break;
         case VT_DOUBLE:
-            double d_value = getAsDouble(node->in.slot_1.node);
             result = updateSymbolValue_Double(sym_tab, handle, d_value);
             node->out.value.d_value = d_value;
             node->out.type = VT_DOUBLE;
