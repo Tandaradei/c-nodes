@@ -1,8 +1,9 @@
 #ifndef SYMTAB_H
 #define SYMTAB_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
 
 #include "src/values.h"
 
@@ -45,5 +46,7 @@ typedef enum UpdateSymbolValue_Result {
 
 UpdateSymbolValue_Result updateSymbolValue_Int(SymbolTable* sym_tab, const SymbolHandle handle, const int value);
 UpdateSymbolValue_Result updateSymbolValue_Double(SymbolTable* sym_tab, const SymbolHandle handle, const double value);
+
+void printSymTab_Tikz(const SymbolTable* sym_tab, FILE* file);
 
 #endif // SYMTAB_H

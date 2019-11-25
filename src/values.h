@@ -13,5 +13,6 @@ typedef union Value {
 } Value;
 
 const char* getColorForValueType(ValueType value_type);
+const char* getStringForValueType(ValueType value_type);
 
 #endif // VALUES_H

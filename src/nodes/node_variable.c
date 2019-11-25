@@ -37,3 +37,57 @@ Node createNode_GetSymbol(const char* identifier) {
     strcpy(node.text, identifier);
     return node;
 }
+
+bool processNode_Assign(Node* node) {
+    SymbolTable* sym_tab = (SymbolTable*) node->in.slot_0.node->additional_info;
+    if(!sym_tab) {
+        return false;
+    }
+    const SymbolHandle handle = node->in.slot_0.node->symbol_handle;
+    ValueType type = node->in.slot_0.node->out.type;
+    UpdateSymbolValue_Result result = USVR_SUCCESS;
+    switch(type) {
+        case VT_INT:
+            int i_value = getAsInt(node->in.slot_1.node);
+            result = updateSymbolValue_Int(sym_tab, handle, i_value);
+            node->out.value.i_value = i_value;
+            node->out.type = VT_INT;
+            break;
+        case VT_DOUBLE:
+            double d_value = getAsDouble(node->in.slot_1.node);
+            result = updateSymbolValue_Double(sym_tab, handle, d_value);
+            node->out.value.d_value = d_value;
+            node->out.type = VT_DOUBLE;
+            break;
+        default:
+            result = USVR_TYPE_MISMATCH;
+    }
+    return result == USVR_SUCCESS;
+}
+
+Node createNode_Assign(Node* node_target, Node* node_value) {
+    return (Node) {
+        .in = {
+            .slot_0 = {
+                .node = node_target,
+                .allowed_value_types = VT_INT | VT_DOUBLE,
+                .allow_rvalues = false,
+            },
+            .slot_1 = {
+                .node = node_value,
+                .allowed_value_types = VT_INT | VT_DOUBLE,
+                .allow_rvalues = true,
+            },
+            .slot_count = 2,
+        }, 
+        .out = {
+            .type = VT_ERROR,
+            .value.i_value = 0,
+            .is_lvalue = false,
+        },
+        .processNode = processNode_Assign,
+        .text = "=",
+        .additional_info = NULL,
+        .symbol_handle = 0,
+    };
+}

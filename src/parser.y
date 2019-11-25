@@ -148,7 +148,7 @@ conditional_expression
 
 assignment_expression
 	: conditional_expression										{$$ = $1;}
-	| unary_expression assignment_operator assignment_expression 	{$$ = makeNode_0(&ast, createNode);}
+	| unary_expression assignment_operator assignment_expression 	{$$ = makeNode_2(&ast, createNode_Assign, $1, $3);}
 	;
 
 assignment_operator
@@ -209,20 +209,39 @@ int main(unsigned int argc, char** argv) {
 			.is_const = true,
 		}
 	);
+	addSymbol(
+		&sym_tab, 
+		"c", 
+		(SymbolValue) {
+			.type = VT_INT,
+			.value.i_value = 0,
+			.is_const = false,
+		}
+	);
 	for(unsigned int i = 1; i < argc; i++) {
 		yy_scan_string(argv[i]);
 		int rc = yyparse();
 		if (rc == 0) {
 			printf("# nodes: %d\n", ast.node_count);
+
+			FILE* file = fopen("output.tex", "w");
+			fprintf(file, "\\documentclass[border=10pt]{standalone}\n\\usepackage{tikz}\n\\begin{document}\n");
+			printSymTab_Tikz(&sym_tab, file);
+
 			processNode(root_node);
+
 			printf("Basic syntax tree:\n");
 			printNodeRecursively_Basic(root_node, 0);
+
 			printf("Enhanced syntax tree:\n");
 			printNodeRecursively_Enhanced(root_node, 0);
-			FILE* file = fopen("output.tex", "w");
-			fprintf(file, "\\documentclass[border=10pt]{standalone}\n\\usepackage{tikz}\n\\begin{document}\n\\begin{tikzpicture}[sibling distance=10em, every node/.style = {shape=rectangle, rounded corners, draw, align=center}]]\n\\");
+
+			fprintf(file, "\\begin{tikzpicture}[sibling distance=10em, every node/.style = {shape=rectangle, rounded corners, draw, align=center}]]\n\\");
 			printNodeRecursively_Tikz(file, root_node, 0);
-			fprintf(file, ";\n\\end{tikzpicture}\n\\end{document}");
+			fprintf(file, ";\n\\end{tikzpicture}\n");
+
+			printSymTab_Tikz(&sym_tab, file);
+			fprintf(file, "\\end{document}");
 			fclose(file);
 			//tree_output(root, 0);
 			//tree_tikz(root, 0);

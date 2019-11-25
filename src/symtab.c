@@ -62,3 +62,24 @@ UpdateSymbolValue_Result updateSymbolValue_Double(SymbolTable* sym_tab, const Sy
     sym_tab->values[i].value.d_value = value;
     return USVR_SUCCESS;
 }
+
+void printSymTab_Tikz(const SymbolTable* sym_tab, FILE* file) {
+    fprintf(file, "\\begin{tabular}{ |c|c|c|c| }\n\\hline\n");
+    fprintf(file, "Name & Value & Type & const? \\\\\n\\hline\n"); 
+    for(uint8_t i = 0; i < sym_tab->symbol_count; i++) {
+        fprintf(file, "%s & ", sym_tab->identifiers[i]);
+        switch(sym_tab->values[i].type) {
+            case VT_INT: 
+                fprintf(file, "%d & ", sym_tab->values[i].value.i_value);
+                break;
+            case VT_DOUBLE: 
+                fprintf(file, "%f & ", sym_tab->values[i].value.d_value);
+                break;
+            default:
+                fprintf(file, "ERROR & ");
+                break;
+        } 
+        fprintf(file, "%s & %d \\\\\n \\hline \n", getStringForValueType(sym_tab->values[i].type), sym_tab->values[i].is_const);
+    }
+    fprintf(file, "\\end{tabular}\n");
+}
