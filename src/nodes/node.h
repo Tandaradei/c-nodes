@@ -66,5 +66,6 @@ void printNodeRecursively_Basic(const Node* node, const uint8_t depth);
 void printNodeRecursively_Enhanced(const Node* node, const uint8_t depth);
 
 void printNodeRecursively_Tikz(FILE* file, const Node* node, const uint8_t depth);
+void printNodeRecursively_D3Json(FILE* file, const Node* node, const uint8_t depth);
 
 #endif // NODE_H

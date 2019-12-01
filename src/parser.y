@@ -243,6 +243,10 @@ int main(unsigned int argc, char** argv) {
 			printSymTab_Tikz(&sym_tab, file);
 			fprintf(file, "\\end{document}");
 			fclose(file);
+
+			file = fopen("materials/output.json", "w");
+			printNodeRecursively_D3Json(file, root_node, 0);
+			fclose(file);
 			//tree_output(root, 0);
 			//tree_tikz(root, 0);
 		}
