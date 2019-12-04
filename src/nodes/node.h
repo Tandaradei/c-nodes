@@ -58,9 +58,16 @@ bool processNode(Node* node);
 int getAsInt(const Node* node);
 double getAsDouble(const Node* node);
 
-void printNodeValue(const NodeOut node_out);
-void printNodeValue_File(FILE* file, const Node* node);
+void printNodeValue(FILE* file, const NodeOut node_out);
 void printNodeType(const NodeOut node_out);
+
+#define PRINT(file, ...) \
+if(file) { \
+    fprintf(file, __VA_ARGS__); \
+} \
+else { \
+    printf(__VA_ARGS__); \
+} 
 
 void printNodeRecursively_Basic(const Node* node, const uint8_t depth);
 void printNodeRecursively_Enhanced(const Node* node, const uint8_t depth);

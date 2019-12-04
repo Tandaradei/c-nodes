@@ -191,6 +191,15 @@ char *s;
 }
 
 int yyparse();
+
+void printTex(FILE* file, Node* root_node) {
+	PRINT(file, "\\documentclass[border=10pt]{standalone}\n\\usepackage{tikz}\n\\begin{document}\n");
+	PRINT(file, "\\begin{tikzpicture}[sibling distance=10em, every node/.style = {shape=rectangle, rounded corners, draw, align=center}]]\n\\");
+	printNodeRecursively_Tikz(file, root_node, 0);
+	PRINT(file, ";\n\\end{tikzpicture}\n");
+	PRINT(file, "\\end{document}\n");
+}
+
 int main(unsigned int argc, char** argv) {
 	addSymbol(
 		&sym_tab, 
@@ -225,32 +234,32 @@ int main(unsigned int argc, char** argv) {
 	yy_scan_string(args.input.value.as_string);
 	int rc = yyparse();
 	if (rc == 0) {
-		printf("# nodes: %d\n", ast.node_count);
-		FILE* file;
-		if(args.tex_file.is_set) {
-			file = fopen(args.tex_file.value.as_string, "w");
-			fprintf(file, "\\documentclass[border=10pt]{standalone}\n\\usepackage{tikz}\n\\begin{document}\n");
-			printSymTab_Tikz(&sym_tab, file);
-		}
 
 		processNode(root_node);
 
-		if(args.tex_file.is_set) {
-			fprintf(file, "\\begin{tikzpicture}[sibling distance=10em, every node/.style = {shape=rectangle, rounded corners, draw, align=center}]]\n\\");
-			printNodeRecursively_Tikz(file, root_node, 0);
-			fprintf(file, ";\n\\end{tikzpicture}\n");
-
-			printSymTab_Tikz(&sym_tab, file);
-			fprintf(file, "\\end{document}");
-			fclose(file);
-			printf("Wrote tex file\n");
+		if(args.tex.is_set) {
+			printf("<Tex>\n");
+			printTex(NULL, root_node);
+			printf("</Tex>\n");
 		}
-
+		if(args.d3.is_set) {
+			printf("<D3>\n");
+			printNodeRecursively_D3Json(NULL, root_node, 0);
+			printf("</D3>\n");
+		}
+		
+		FILE* file = NULL;
+		if(args.tex_file.is_set) {
+			file = fopen(args.tex_file.value.as_string, "w");
+			printTex(file, root_node);
+			fclose(file);
+			file = NULL;
+		}
 		if(args.d3_file.is_set) {
 			file = fopen(args.d3_file.value.as_string, "w");
 			printNodeRecursively_D3Json(file, root_node, 0);
 			fclose(file);
-			printf("Wrote json file\n");
+			file = NULL;
 		}
 	}
 	else {

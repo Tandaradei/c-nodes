@@ -106,30 +106,16 @@ double getAsDouble(const Node* node) {
     };
 }
 
-void printNodeValue(const NodeOut node_out) {
+void printNodeValue(FILE* file, const NodeOut node_out) {
     switch (node_out.type) {
     case VT_INT:
-        printf("%d", node_out.value.i_value);
+        PRINT(file, "%d",node_out.value.i_value);
         break;
     case VT_DOUBLE:
-        printf("%f", node_out.value.d_value);
+        PRINT(file, "%f", node_out.value.d_value);
         break;
     default:
-        printf("<ERROR>");
-        break;
-    }
-}
-
-void printNodeValue_File(FILE* file, const Node* node) {
-    switch (node->out.type) {
-    case VT_INT:
-        fprintf(file, "%d",node->out.value.i_value);
-        break;
-    case VT_DOUBLE:
-        fprintf(file, "%f", node->out.value.d_value);
-        break;
-    default:
-        fprintf(file, "ERROR");
+        PRINT(file, "ERROR");
         break;
     }
 }
@@ -167,7 +153,7 @@ void printNodeRecursively_Enhanced(const Node* node, const uint8_t depth) {
     printf("%s[%s] T: ", &"              "[14-depth], node->text);
     printNodeType(node->out);
     printf(" | V: ");
-    printNodeValue(node->out);
+    printNodeValue(NULL, node->out);
     printf(" | # In slots: %d\n", node->in.slot_count);
     for(unsigned int i = 0; i < node->in.slot_count; i++) {
         printNodeRecursively_Enhanced(node->in.slot[i].node, depth + 1);
@@ -178,15 +164,15 @@ void printNodeRecursively_Tikz(FILE* file, const Node* node, const uint8_t depth
     if(!node) {
         return;
     }
-    fprintf(file, "node[fill=%s,%s label={", getColorForValueType(node->out.type), node->out.is_lvalue ? " double," : "");
-    printNodeValue_File(file, node);
-    fprintf(file, "}] { %s }", node->text);
+    PRINT(file, "node[fill=%s,%s label={", getColorForValueType(node->out.type), node->out.is_lvalue ? " double," : "");
+    printNodeValue(file, node->out);
+    PRINT(file, "}] { %s }", node->text);
     if(node->in.slot_count > 0) {
-        fprintf(file, "\n");
+        PRINT(file, "\n");
         for(unsigned int i = 0; i < node->in.slot_count; i++) {
-            fprintf(file, "%schild { ", &"              "[14-depth]);
+            PRINT(file, "%schild { ", &"              "[14-depth]);
             printNodeRecursively_Tikz(file, node->in.slot[i].node, depth + 1);
-            fprintf(file, "%s}\n", &"              "[14-depth]);
+            PRINT(file, "%s}\n", &"              "[14-depth]);
         }
     }
 }
@@ -195,13 +181,13 @@ void printNodeRecursively_D3Json(FILE* file, const Node* node, const uint8_t dep
     if(!node) {
         return;
     }
-    fprintf(file, "%s{ \"name\": \"%s\",\n", &"              "[14-depth], node->text);
-    fprintf(file, "%s  \"children\":[\n", &"              "[14-depth]);
+    PRINT(file, "%s{ \"name\": \"%s\",\n", &"              "[14-depth], node->text);
+    PRINT(file, "%s  \"children\":[\n", &"              "[14-depth]);
     if(node->in.slot_count > 0) {
         for(unsigned int i = 0; i < node->in.slot_count; i++) {
             printNodeRecursively_D3Json(file, node->in.slot[i].node, depth + 1);
-            fprintf(file, "%s", i < node->in.slot_count - 1 ? ",\n" : "");
+            PRINT(file, "%s", i < node->in.slot_count - 1 ? ",\n" : "");
         }
     }
-    fprintf(file, "%s]}", &"              "[14-depth]);
+    PRINT(file, "%s]}\n", &"              "[14-depth]);
 }
