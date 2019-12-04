@@ -190,3 +190,18 @@ void printNodeRecursively_Tikz(FILE* file, const Node* node, const uint8_t depth
         }
     }
 }
+
+void printNodeRecursively_D3Json(FILE* file, const Node* node, const uint8_t depth) {
+    if(!node) {
+        return;
+    }
+    fprintf(file, "%s{ \"name\": \"%s\",\n", &"              "[14-depth], node->text);
+    fprintf(file, "%s  \"children\":[\n", &"              "[14-depth]);
+    if(node->in.slot_count > 0) {
+        for(unsigned int i = 0; i < node->in.slot_count; i++) {
+            printNodeRecursively_D3Json(file, node->in.slot[i].node, depth + 1);
+            fprintf(file, "%s", i < node->in.slot_count - 1 ? ",\n" : "");
+        }
+    }
+    fprintf(file, "%s]}", &"              "[14-depth]);
+}

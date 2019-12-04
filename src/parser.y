@@ -178,6 +178,7 @@ type_name
 #include <stdio.h>
 
 #include "src/ast.h"
+#include "src/args.h"
 
 extern char yytext[];
 extern int column;
@@ -218,24 +219,23 @@ int main(unsigned int argc, char** argv) {
 			.is_const = false,
 		}
 	);
-	for(unsigned int i = 1; i < argc; i++) {
-		yy_scan_string(argv[i]);
-		int rc = yyparse();
-		if (rc == 0) {
-			printf("# nodes: %d\n", ast.node_count);
 
-			FILE* file = fopen("output.tex", "w");
+	MyArgs args = parseArgs(argc, argv);
+
+	yy_scan_string(args.input.value.as_string);
+	int rc = yyparse();
+	if (rc == 0) {
+		printf("# nodes: %d\n", ast.node_count);
+		FILE* file;
+		if(args.tex_file.is_set) {
+			file = fopen(args.tex_file.value.as_string, "w");
 			fprintf(file, "\\documentclass[border=10pt]{standalone}\n\\usepackage{tikz}\n\\begin{document}\n");
 			printSymTab_Tikz(&sym_tab, file);
+		}
 
-			processNode(root_node);
+		processNode(root_node);
 
-			printf("Basic syntax tree:\n");
-			printNodeRecursively_Basic(root_node, 0);
-
-			printf("Enhanced syntax tree:\n");
-			printNodeRecursively_Enhanced(root_node, 0);
-
+		if(args.tex_file.is_set) {
 			fprintf(file, "\\begin{tikzpicture}[sibling distance=10em, every node/.style = {shape=rectangle, rounded corners, draw, align=center}]]\n\\");
 			printNodeRecursively_Tikz(file, root_node, 0);
 			fprintf(file, ";\n\\end{tikzpicture}\n");
@@ -243,14 +243,20 @@ int main(unsigned int argc, char** argv) {
 			printSymTab_Tikz(&sym_tab, file);
 			fprintf(file, "\\end{document}");
 			fclose(file);
-			//tree_output(root, 0);
-			//tree_tikz(root, 0);
+			printf("Wrote tex file\n");
 		}
-		else {
-			printf("Syntaxfehler\n");
+
+		if(args.d3_file.is_set) {
+			file = fopen(args.d3_file.value.as_string, "w");
+			printNodeRecursively_D3Json(file, root_node, 0);
+			fclose(file);
+			printf("Wrote json file\n");
 		}
-		yylex_destroy();
-	}	
+	}
+	else {
+		printf("Syntaxfehler\n");
+	}
+	yylex_destroy();
 	
 	return 0;
 }
