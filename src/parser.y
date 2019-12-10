@@ -243,9 +243,9 @@ int main(unsigned int argc, char** argv) {
 			printf("</Tex>\n");
 		}
 		if(args.d3.is_set) {
-			printf("<D3>\n");
+			//printf("<D3>\n");
 			printNodeRecursively_D3Json(NULL, root_node, 0);
-			printf("</D3>\n");
+			//printf("</D3>\n");
 		}
 		
 		FILE* file = NULL;
