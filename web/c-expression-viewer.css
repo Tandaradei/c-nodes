@@ -1,0 +1,32 @@
+
+body {
+    font: 12px courier;
+}
+
+.link {
+    fill: none;
+    stroke: #A0A0A0;
+}
+
+.border {
+    fill: none;
+    shape-rendering: crispEdges;
+    stroke: #aaa;
+}
+
+.node {
+	stroke: black;
+	fill: #FFFFFF
+}
+
+.node.int {
+	fill: green;
+}
+
+.node.double {
+	fill:blue
+}
+
+.node.error {
+	fill:red
+}
