@@ -120,16 +120,16 @@ void printNodeValue(FILE* file, const NodeOut node_out) {
     }
 }
 
-void printNodeType(const NodeOut node_out) {
+void printNodeType(FILE* file, const NodeOut node_out) {
     switch (node_out.type) {
     case VT_INT:
-        printf("<INT>");
+        PRINT(file, "int");
         break;
     case VT_DOUBLE:
-        printf("<DOUBLE>");
+        PRINT(file, "double");
         break;
     default:
-        printf("<ERROR>");
+        PRINT(file, "error");
         break;
     }
 }
@@ -151,7 +151,7 @@ void printNodeRecursively_Enhanced(const Node* node, const uint8_t depth) {
         return;
     }
     printf("%s[%s] T: ", &"              "[14-depth], node->text);
-    printNodeType(node->out);
+    printNodeType(NULL, node->out);
     printf(" | V: ");
     printNodeValue(NULL, node->out);
     printf(" | # In slots: %d\n", node->in.slot_count);
@@ -182,12 +182,23 @@ void printNodeRecursively_D3Json(FILE* file, const Node* node, const uint8_t dep
         return;
     }
     PRINT(file, "%s{ \"name\": \"%s\",\n", &"              "[14-depth], node->text);
-    PRINT(file, "%s  \"children\":[\n", &"              "[14-depth]);
+    PRINT(file, "%s  \"result\": \"", &"              "[14-depth]);
+    printNodeValue(file, node->out);
+    PRINT(file, "\",\n");
+    PRINT(file, "%s  \"type\": \"", &"              "[14-depth]);
+    printNodeType(file, node->out);
+    PRINT(file, "\",\n");
+    PRINT(file, "%s  \"children\":[", &"              "[14-depth]);
     if(node->in.slot_count > 0) {
+        PRINT(file, "\n");
         for(unsigned int i = 0; i < node->in.slot_count; i++) {
             printNodeRecursively_D3Json(file, node->in.slot[i].node, depth + 1);
             PRINT(file, "%s", i < node->in.slot_count - 1 ? ",\n" : "");
         }
+        PRINT(file, "\n%s]}\n", &"              "[14-depth]);
     }
-    PRINT(file, "%s]}\n", &"              "[14-depth]);
+    else {
+        PRINT(file, "]\n%s}", &"              "[14-depth]);
+    }
+    
 }

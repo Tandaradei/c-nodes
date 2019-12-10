@@ -59,7 +59,7 @@ int getAsInt(const Node* node);
 double getAsDouble(const Node* node);
 
 void printNodeValue(FILE* file, const NodeOut node_out);
-void printNodeType(const NodeOut node_out);
+void printNodeType(FILE* file, const NodeOut node_out);
 
 #define PRINT(file, ...) \
 if(file) { \
