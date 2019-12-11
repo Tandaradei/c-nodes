@@ -32,7 +32,12 @@ function loadfile(file) {
   d3.json(file).then(plot);
 }
 
+<<<<<<< Updated upstream
 function plot(data) {
+=======
+function plot(data, expr) {
+  console.log(expr);
+>>>>>>> Stashed changes
   svg.each(function(orientation) {
     //var svg = d3.select(this);
     var o = orientation.value;
@@ -136,11 +141,15 @@ function test(h) {
       }
     };
     xhttp.open("POST", "c-expression-viewer.php", true);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send("expr=" + document.getElementById("expr").value); 
+    var params = "expr=" + document.getElementById("expr").value;
+    console.log(params);
+    xhttp.setRequestHeader("Content-type", "text/plain");
+    console.log(xhttp);
+    xhttp.send(params);
   } 
   else {
     console.log(h);
-    plot(JSON.parse(h.responseText));
+    var result = JSON.parse(h)
+    plot(result.tree, result.expr);
   }
 }
