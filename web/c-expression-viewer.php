@@ -1,13 +1,15 @@
 <?php
 	header("Content-Type: application/json");
 	$d3_output = array();
-	if( !isset($_POST['expr'])) {
-		echo("No expr found");
+	$post = file_get_contents('php://input');
+	$data = JSON_decode($post, true);
+	if( !isset($data['expr'])) {
+		echo("{\"expr\":\"\", \"tree\":{}}");
 	}
 	else {
-		exec("./c-nodes.out -expr \"".$_POST['expr']."\" -d3", $d3_output);
+		exec("./c-nodes.out -expr \"".$data['expr']."\" -d3", $d3_output);
 
-		echo "{ \"expr\": \"".$_POST['expr']."\",";
+		echo "{ \"expr\": \"".$data['expr']."\",";
 		echo "  \"tree\": ";
 		foreach($d3_output as $line) {
 			echo $line;

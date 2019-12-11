@@ -32,12 +32,8 @@ function loadfile(file) {
   d3.json(file).then(plot);
 }
 
-<<<<<<< Updated upstream
-function plot(data) {
-=======
 function plot(data, expr) {
   console.log(expr);
->>>>>>> Stashed changes
   svg.each(function(orientation) {
     //var svg = d3.select(this);
     var o = orientation.value;
