@@ -2,8 +2,7 @@
 
 #include <stdio.h>
 
-#define DEBUG 0
-#define PRINT_DEBUG(...) if(DEBUG) { printf(__VA_ARGS__); }
+#include "debug.h"
 
 Node* makeNode_0(AbstractSyntaxTree* ast, Node (*createNode)(void)) {
     if(ast->node_count < AST_MAX_NODES) {
@@ -71,14 +70,14 @@ Node* makeNode_0_STRING(AbstractSyntaxTree* ast, Node (*createNode)(const char* 
         PRINT_DEBUG("Inserted node from makeNode_0_STRING (%s) on #%d\n", value, ast->node_count-1);
         return &(ast->nodes[ast->node_count-1]);
     }
-    printf("Failed to insert node from makeNode_0_STRING");
+    PRINT_DEBUG("Failed to insert node from makeNode_0_STRING");
     return NULL;
 }
 
 Node* makeNode_1_STRING(AbstractSyntaxTree* ast, Node (*createNode)(Node* node_0, const char* value), Node* node_0, const char* value) {
     if(ast->node_count < AST_MAX_NODES) {
         ast->nodes[ast->node_count++] = createNode(node_0, value);
-        printf("Inserted node from makeNode_1_STRING on #%d\n", ast->node_count-1);
+        PRINT_DEBUG("Inserted node from makeNode_1_STRING on #%d\n", ast->node_count-1);
         return &(ast->nodes[ast->node_count-1]);
     }
     PRINT_DEBUG("Failed to insert node from makeNode_1_STRING");

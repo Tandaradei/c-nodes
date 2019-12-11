@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include "debug.h"
+
 AddSymbol_Result addSymbol(SymbolTable* sym_tab, const char* identifier, SymbolValue value) {
     if(sym_tab->symbol_count == MAX_SYMBOLS) {
         return ASR_TABLE_FULL;
@@ -30,10 +32,10 @@ SymbolHandle getSymbolHandle(const SymbolTable* sym_tab, const char* identifier)
 SymbolValue getSymbolValue(const SymbolTable* sym_tab, const SymbolHandle handle) {
     assert(handle.value > 0 && handle.value <= sym_tab->symbol_count);
     const SymbolValue sym_val = sym_tab->values[handle.value - 1];
-    printf("[DEBUG] Requested symbol value for handle %d\n", handle.value);
-    printf("[DEBUG] * is_const %s\n", sym_val.is_const ? "true" : "false");
-    printf("[DEBUG] * type %d\n", sym_val.type);
-    printf("[DEBUG] * value %f\n", sym_val.type == VT_INT ? sym_val.value.i_value : sym_val.value.d_value);
+    PRINT_DEBUG("[DEBUG] Requested symbol value for handle %d\n", handle.value);
+    PRINT_DEBUG("[DEBUG] * is_const %s\n", sym_val.is_const ? "true" : "false");
+    PRINT_DEBUG("[DEBUG] * type %d\n", sym_val.type);
+    PRINT_DEBUG("[DEBUG] * value %f\n", sym_val.type == VT_INT ? sym_val.value.i_value : sym_val.value.d_value);
     return sym_val;
 }
 

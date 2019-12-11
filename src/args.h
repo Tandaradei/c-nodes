@@ -7,7 +7,7 @@
 typedef union MyArgs {
     Arg args[ARG_COUNT];
     struct {
-        Arg input;
+        Arg expr;
         Arg d3;
         Arg tex;
         Arg d3_file;
@@ -17,26 +17,26 @@ typedef union MyArgs {
 
 MyArgs parseArgs(unsigned int argc, char** argv) {
     MyArgs my_args = {
-        .input = {
-            .name = "input",
+        .expr = {
+            .name = "-expr",
             .type = ArgType_String,
             .value.as_string = "1 + 2 * 3 + 4",
         },
         .d3 = {
-            .name = "d3",
+            .name = "-d3",
             .type = ArgType_Flag
         },
         .tex = {
-            .name = "tex",
+            .name = "-tex",
             .type = ArgType_Flag,
         },
         .d3_file = {
-            .name = "d3_file",
+            .name = "-d3_file",
             .type = ArgType_String,
             .value.as_string = "output.json",
         },
         .tex_file = {
-            .name = "tex_file",
+            .name = "-tex_file",
             .type = ArgType_String,
             .value.as_string = "output.tex"
         },

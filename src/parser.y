@@ -231,7 +231,7 @@ int main(unsigned int argc, char** argv) {
 
 	MyArgs args = parseArgs(argc, argv);
 
-	yy_scan_string(args.input.value.as_string);
+	yy_scan_string(args.expr.value.as_string);
 	int rc = yyparse();
 	if (rc == 0) {
 
