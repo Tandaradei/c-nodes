@@ -179,6 +179,7 @@ type_name
 
 #include "src/ast.h"
 #include "src/args.h"
+#include "src/debug.h"
 
 extern char yytext[];
 extern int column;
@@ -200,37 +201,62 @@ void printTex(FILE* file, Node* root_node) {
 	PRINT(file, "\\end{document}\n");
 }
 
-int main(unsigned int argc, char** argv) {
-	addSymbol(
-		&sym_tab, 
-		"a", 
-		(SymbolValue) {
-			.type = VT_INT,
-			.value.i_value = 9,
-			.is_const = false,
-		}
-	);
-	addSymbol(
-		&sym_tab, 
-		"b", 
-		(SymbolValue) {
-			.type = VT_DOUBLE,
-			.value.d_value = 15.023,
-			.is_const = true,
-		}
-	);
-	addSymbol(
-		&sym_tab, 
-		"c", 
-		(SymbolValue) {
-			.type = VT_INT,
-			.value.i_value = 0,
-			.is_const = false,
-		}
-	);
+char* splitFirst(const char* string, char delimiter, const unsigned int OFFSET, char* dest) {
+	unsigned int i = 0;
+	while(string[i + OFFSET] && string[i + OFFSET] != delimiter) {
+		PRINT_DEBUG("i: %2d | o: %2d | r: %2d | c: %c\n", i, OFFSET, i + OFFSET, string[i + OFFSET]);
+		dest[i] = string[i + OFFSET];
+		i++;
+	}
+	PRINT_DEBUG("-\n");
+	dest[i] = 0;
+}
 
+int main(unsigned int argc, char** argv) {
 	MyArgs args = parseArgs(argc, argv);
 
+	if(args.symbols.is_set) {
+		char* symbol = strtok(args.symbols.value.as_string, ";");
+		while(symbol != NULL) {
+			PRINT_DEBUG("symbol: %s\n", symbol);
+			char name[80];
+			char type[10];
+			char value[20];
+			char is_const[2];
+			char delimiter = ',';
+			unsigned int offset = 0;
+			splitFirst(symbol, delimiter, offset, name);
+			offset += strlen(name) + 1;
+			splitFirst(symbol, delimiter, offset, type);
+			offset += strlen(type) + 1;
+			splitFirst(symbol, delimiter, offset, value);
+			offset += strlen(value) + 1;
+			splitFirst(symbol, delimiter, offset, is_const);
+			PRINT_DEBUG("n: %s | t: %s | v: %s | c: %s\n", name, type, value, is_const);
+			ValueType vt = VT_ERROR;
+			Value v;
+			char* endptr;
+			if(!strcmp(type, "int")) {
+				vt = VT_INT;
+				v.i_value = strtol(type, &endptr, 10);
+			}
+			else if(!strcmp(type, "double")) {
+				vt = VT_DOUBLE;
+				v.d_value = strtod(type, &endptr);
+			}
+			addSymbol(
+				&sym_tab, 
+				name, 
+				(SymbolValue) {
+					vt,
+					v,
+					is_const[0] == '1'
+				}
+			);
+
+			symbol = strtok(NULL, ";");
+		}
+	}
 	yy_scan_string(args.expr.value.as_string);
 	int rc = yyparse();
 	if (rc == 0) {

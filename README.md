@@ -3,6 +3,7 @@
 ## Usage
 Process arguments:
 * -expr "\<my expr\>": The expression to parse
+* -symbols "\<symbols list\>": List of symbols (each \<identifier\>,\<type(int\\double)\>,\<value\>,\<const(0\\1)\>) separated by ';' => "a,double,3.0,1;b,int,5,0"
 * -d3: Print JSON output to stdout
 * -tex: Print tex output to stdout
 * -d3_file "\<filename\>": Write JSON output to file

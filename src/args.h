@@ -3,11 +3,12 @@
 
 #include "args_base.h"
 
-#define ARG_COUNT 5
+#define ARG_COUNT 6
 typedef union MyArgs {
     Arg args[ARG_COUNT];
     struct {
         Arg expr;
+        Arg symbols;
         Arg d3;
         Arg tex;
         Arg d3_file;
@@ -21,6 +22,11 @@ MyArgs parseArgs(unsigned int argc, char** argv) {
             .name = "-expr",
             .type = ArgType_String,
             .value.as_string = "1 + 2 * 3 + 4",
+        },
+        .symbols = {
+            .name = "-symbols",
+            .type = ArgType_String,
+            .value.as_string = "",
         },
         .d3 = {
             .name = "-d3",
