@@ -238,11 +238,11 @@ int main(unsigned int argc, char** argv) {
 			char* endptr;
 			if(!strcmp(type, "int")) {
 				vt = VT_INT;
-				v.i_value = strtol(type, &endptr, 10);
+				v.i_value = strtol(value, &endptr, 10);
 			}
 			else if(!strcmp(type, "double")) {
 				vt = VT_DOUBLE;
-				v.d_value = strtod(type, &endptr);
+				v.d_value = strtod(value, &endptr);
 			}
 			addSymbol(
 				&sym_tab, 

@@ -138,8 +138,30 @@ function test(h) {
     };
     xhttp.open("POST", "c-expression-viewer.php", true);
     var params = {
-	expr: document.getElementById("expr").value
-	};
+      expr: document.getElementById("expr").value
+    };
+    if(vars.children.length > 0) {
+      var symbols = "";
+      console.log(vars);
+      for(i in vars.children) {
+        for(u in vars.children[i].children) {
+          var td = vars.children[i].children[u];
+          console.log(td);
+          if(typeof td === "object" && td.children.length > 0) {
+            var node = td.children[0];
+            var value = node.type === "checkbox" ? 
+              node.checked ? "1" : "0" :
+              node.value;
+            console.log(value);
+            symbols += value +",";
+          }
+        }
+        symbols = symbols.slice(0, symbols.length - 1);
+        symbols += ";";
+      }
+      symbols = symbols.slice(0, symbols.length - 1);
+      params["symbols"] = symbols;
+    }
     console.log(params);
     xhttp.setRequestHeader("Content-type", "application/json");
     console.log(xhttp);
@@ -150,4 +172,43 @@ function test(h) {
     var result = JSON.parse(h)
     plot(result.tree, result.expr);
   }
+}
+
+function addVariable() {
+  vars = document.getElementById("vars");
+  
+  var new_var = document.createElement("tr");
+  
+  var identifier = document.createElement("input");
+  identifier.setAttribute("type", "text");
+  var identifier_td = document.createElement("td");
+  identifier_td.appendChild(identifier);
+  new_var.appendChild(identifier_td);
+
+  var type = document.createElement("select");
+  var opt_int = document.createElement("option");
+  opt_int.setAttribute("value", "int");
+  opt_int.text = "int";
+  type.appendChild(opt_int);
+  var opt_double = document.createElement("option");
+  opt_double.setAttribute("value", "double");
+  opt_double.text = "double";
+  type.appendChild(opt_double);
+  var type_td = document.createElement("td");
+  type_td.appendChild(type);
+  new_var.appendChild(type_td);
+  
+  var value = document.createElement("input");
+  value.setAttribute("type", "text");
+  var value_td = document.createElement("td");
+  value_td.appendChild(value);
+  new_var.appendChild(value_td);
+
+  var is_const = document.createElement("input");
+  is_const.setAttribute("type", "checkbox");
+  var is_const_td = document.createElement("td");
+  is_const_td.appendChild(is_const);
+  new_var.appendChild(is_const_td);
+
+  vars.appendChild(new_var);
 }

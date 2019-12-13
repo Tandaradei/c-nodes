@@ -7,7 +7,7 @@
 		echo("{\"expr\":\"\", \"tree\":{}}");
 	}
 	else {
-		exec("./c-nodes.out -expr \"".$data['expr']."\" -d3", $d3_output);
+		exec("./c-nodes.out -expr \"".$data['expr']."\" -symbols \"".$data['symbols']."\" -d3", $d3_output);
 
 		echo "{ \"expr\": \"".$data['expr']."\",";
 		echo "  \"tree\": ";

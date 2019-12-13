@@ -11,6 +11,19 @@
       <img src="/images/hs-aa-logo.svg" width="20%" />
       C-expression-viewer
     </h1>
+    variables:
+    <table>
+      <thead>
+        <td>Name</td>
+        <td>Type</td>
+        <td>Value</td>
+        <td>const?</td>
+      </thead>
+      <tbody id="vars">
+
+      </tbody>
+    </table>
+    <input onclick="addVariable()" type="button" value="Add variable" />
     expression:
     <input id="expr" />
     <input onclick="test()" type="button" value="Draw tree" />
