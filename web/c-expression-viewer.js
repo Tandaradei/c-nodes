@@ -137,12 +137,14 @@ function test(h) {
       }
     };
     xhttp.open("POST", "c-expression-viewer.php", true);
-    var params = "expr=" + document.getElementById("expr").value;
+    var params = {
+	expr: document.getElementById("expr").value
+	};
     console.log(params);
-    xhttp.setRequestHeader("Content-type", "text/plain");
+    xhttp.setRequestHeader("Content-type", "application/json");
     console.log(xhttp);
-    xhttp.send(params);
-  } 
+    xhttp.send(JSON.stringify(params));
+  }
   else {
     console.log(h);
     var result = JSON.parse(h)
