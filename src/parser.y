@@ -238,9 +238,9 @@ int main(unsigned int argc, char** argv) {
 		processNode(root_node);
 
 		if(args.tex.is_set) {
-			printf("<Tex>\n");
+			//printf("<Tex>\n");
 			printTex(NULL, root_node);
-			printf("</Tex>\n");
+			//printf("</Tex>\n");
 		}
 		if(args.d3.is_set) {
 			//printf("<D3>\n");
