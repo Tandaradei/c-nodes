@@ -27,6 +27,10 @@ body {
 	fill:blue
 }
 
-.node.error {
+.node.ERROR {
 	fill:red
+}
+
+.node.UNPROCESSED {
+    fill: white
 }

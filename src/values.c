@@ -5,9 +5,10 @@
 
 const char* getColorForValueType(ValueType value_type) {
     static const char* VALUE_TYPE_COLORS[] = {
+        "white",
         "red",
-        "cyan",
-        "orange"
+        "green",
+        "blue",
     };
     uint32_t converted_type = value_type;
     uint32_t index = 0;
@@ -20,9 +21,10 @@ const char* getColorForValueType(ValueType value_type) {
 
 const char* getStringForValueType(ValueType value_type) {
     static const char* VALUE_TYPE_NAMES[] = {
+        "UNPROCESSED",
         "ERROR",
         "int",
-        "double"
+        "double",
     };
     uint32_t converted_type = value_type;
     uint32_t index = 0;

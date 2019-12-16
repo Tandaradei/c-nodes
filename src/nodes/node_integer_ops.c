@@ -1,6 +1,10 @@
 #include "node_integer_ops.h"
 
 bool processNode_IncrementPre(Node* node) {
+    bool all_ins_valid = processAllNodeInSlots(node);
+    if(!all_ins_valid) {
+        return false;
+    }
     SymbolHandle handle = node->in.slot_0.node->symbol_handle;
     SymbolTable* sym_tab = (SymbolTable*)node->in.slot_0.node->additional_info;
     if(!sym_tab) {
@@ -27,7 +31,7 @@ Node createNode_IncrementPre(Node* node_0) {
             .slot_count = 1,
         },
         .out = {
-            .type = VT_ERROR,
+            .type = VT_UNPROCESSED,
             .value.i_value = 0,
         },
         .processNode = processNode_IncrementPre,
@@ -37,6 +41,10 @@ Node createNode_IncrementPre(Node* node_0) {
 }
 
 bool processNode_IncrementPost(Node* node) {
+    bool all_ins_valid = processAllNodeInSlots(node);
+    if(!all_ins_valid) {
+        return false;
+    }
     SymbolHandle handle = node->in.slot_0.node->symbol_handle;
     SymbolTable* sym_tab = (SymbolTable*)node->in.slot_0.node->additional_info;
     if(!sym_tab) {
@@ -64,7 +72,7 @@ Node createNode_IncrementPost(Node* node_0) {
             .slot_count = 1,
         },
         .out = {
-            .type = VT_ERROR,
+            .type = VT_UNPROCESSED,
             .value.i_value = 0,
         },
         .processNode = processNode_IncrementPost,
@@ -74,6 +82,10 @@ Node createNode_IncrementPost(Node* node_0) {
 }
 
 bool processNode_DecrementPre(Node* node) {
+    bool all_ins_valid = processAllNodeInSlots(node);
+    if(!all_ins_valid) {
+        return false;
+    }
     SymbolHandle handle = node->in.slot_0.node->symbol_handle;
     SymbolTable* sym_tab = (SymbolTable*)node->in.slot_0.node->additional_info;
     if(!sym_tab) {
@@ -100,7 +112,7 @@ Node createNode_DecrementPre(Node* node_0) {
             .slot_count = 1,
         },
         .out = {
-            .type = VT_ERROR,
+            .type = VT_UNPROCESSED,
             .value.i_value = 0,
         },
         .processNode = processNode_DecrementPre,
@@ -110,6 +122,10 @@ Node createNode_DecrementPre(Node* node_0) {
 }
 
 bool processNode_DecrementPost(Node* node) {
+    bool all_ins_valid = processAllNodeInSlots(node);
+    if(!all_ins_valid) {
+        return false;
+    }
     SymbolHandle handle = node->in.slot_0.node->symbol_handle;
     SymbolTable* sym_tab = (SymbolTable*)node->in.slot_0.node->additional_info;
     if(!sym_tab) {
@@ -137,7 +153,7 @@ Node createNode_DecrementPost(Node* node_0) {
             .slot_count = 1,
         },
         .out = {
-            .type = VT_ERROR,
+            .type = VT_UNPROCESSED,
             .value.i_value = 0,
         },
         .processNode = processNode_DecrementPost,

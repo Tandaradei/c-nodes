@@ -6,5 +6,6 @@
 #include "node_arithmetic.h"
 #include "node_integer_ops.h"
 #include "node_variable.h"
+#include "node_ternary.h"
 
 #endif // NODES_LIST_H

@@ -5,7 +5,11 @@
 #include "node.h"
 
 #define NODE_ARITHMETIC(OPERATOR, NAME) \
-bool processNode_##NAME(Node* node) {\
+bool processNode_##NAME(Node* node) { \
+    bool all_ins_valid = processAllNodeInSlots(node); \
+    if(!all_ins_valid) { \
+        return false; \
+    } \
     ValueType type = getHighestValueType(node->in);\
     node->out.type = type;\
     switch (type) {\
@@ -29,7 +33,7 @@ Node createNode_##NAME##_Empty() { \
             .slot_count = 2, \
         }, \
         .out = { \
-            .type = VT_ERROR, \
+            .type = VT_UNPROCESSED, \
             .value.i_value = 0 \
         }, \
         .processNode = processNode_##NAME, \

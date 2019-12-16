@@ -49,10 +49,11 @@ Node createNode(void);
 
 Node createNode_BasicBinary(Node* node_0, Node* node_1);
 
-bool checkNode(const NodeIn node_in);
+bool checkNodeIn(const NodeIn node_in);
 
 ValueType getHighestValueType(const NodeIn node_in);
 
+bool processAllNodeInSlots(Node* node);
 bool processNode(Node* node);
 
 int getAsInt(const Node* node);

@@ -143,7 +143,7 @@ logical_or_expression
 
 conditional_expression
 	: logical_or_expression 											{$$ = $1;}
-	| logical_or_expression '?' expression ':' conditional_expression 	{$$ = makeNode_0(&ast, createNode);}
+	| logical_or_expression '?' expression ':' conditional_expression 	{$$ = makeNode_3(&ast, createNode_Ternary, $1, $3, $5);}
 	;
 
 assignment_expression

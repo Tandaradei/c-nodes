@@ -13,7 +13,7 @@ Node createNode(void) {
             .slot_count = 0,
         },
         .out = {
-            .type = VT_ERROR,
+            .type = VT_UNPROCESSED,
             .value.i_value = 0,
         },
         .processNode = processNodeDefault,
@@ -38,7 +38,7 @@ Node createNode_BasicBinary(Node* node_0, Node* node_1) {
             .slot_count = 2,
         },
         .out = {
-            .type = VT_ERROR,
+            .type = VT_UNPROCESSED,
             .value.i_value = 0,
         },
         .processNode = processNodeDefault,
@@ -48,7 +48,7 @@ Node createNode_BasicBinary(Node* node_0, Node* node_1) {
     };
 }
 
-bool checkNode(const NodeIn node_in) {
+bool checkNodeIn(const NodeIn node_in) {
     for(unsigned int i = 0; i < node_in.slot_count; i++) {
         if(!(
             node_in.slot[i].node 
@@ -71,18 +71,17 @@ ValueType getHighestValueType(const NodeIn node_in) {
     return type;
 }
 
-bool processNode(Node* node) {
-    bool is_successful = false;
-    bool all_ins_valid = true;
+bool processAllNodeInSlots(Node* node) {
     for(unsigned int i = 0; i < node->in.slot_count; i++) {
         if(!processNode(node->in.slot[i].node)) {
-            all_ins_valid = false;
-            break;
+            return false;
         }
     }
-    if(all_ins_valid && node->processNode && checkNode(node->in)) {
-        is_successful = node->processNode(node);
-    }
+    return true;
+}
+
+bool processNode(Node* node) {
+    bool is_successful = node->processNode && node->processNode(node);
     if(!is_successful) {
         node->out.type = VT_ERROR;
     }
@@ -108,30 +107,23 @@ double getAsDouble(const Node* node) {
 
 void printNodeValue(FILE* file, const NodeOut node_out) {
     switch (node_out.type) {
+    case VT_UNPROCESSED:
+        PRINT(file, "UNPROCESSED");
+        break;
+    case VT_ERROR:
+        PRINT(file, "ERROR");
+        break;
     case VT_INT:
         PRINT(file, "%d",node_out.value.i_value);
         break;
     case VT_DOUBLE:
         PRINT(file, "%f", node_out.value.d_value);
         break;
-    default:
-        PRINT(file, "ERROR");
-        break;
     }
 }
 
 void printNodeType(FILE* file, const NodeOut node_out) {
-    switch (node_out.type) {
-    case VT_INT:
-        PRINT(file, "int");
-        break;
-    case VT_DOUBLE:
-        PRINT(file, "double");
-        break;
-    default:
-        PRINT(file, "error");
-        break;
-    }
+    PRINT(file, getStringForValueType(node_out.type));
 }
 
 void printNodeRecursively_Basic(const Node* node, const uint8_t depth) {

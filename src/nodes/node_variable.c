@@ -27,7 +27,7 @@ Node createNode_GetSymbol(const char* identifier) {
             .slot_count = 0,
         }, 
         .out = {
-            .type = VT_INT,
+            .type = VT_UNPROCESSED,
             .value.i_value = 0
         },
         .processNode = processNode_GetSymbol,
@@ -81,7 +81,7 @@ Node createNode_Assign(Node* node_target, Node* node_value) {
             .slot_count = 2,
         }, 
         .out = {
-            .type = VT_ERROR,
+            .type = VT_UNPROCESSED,
             .value.i_value = 0,
             .is_lvalue = false,
         },
