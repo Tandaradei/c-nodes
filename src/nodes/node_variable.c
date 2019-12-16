@@ -39,6 +39,10 @@ Node createNode_GetSymbol(const char* identifier) {
 }
 
 bool processNode_Assign(Node* node) {
+    bool all_ins_valid = processAllNodeInSlots(node);
+    if(!all_ins_valid) {
+        return false;
+    }
     SymbolTable* sym_tab = (SymbolTable*) node->in.slot_0.node->additional_info;
     if(!sym_tab) {
         return false;

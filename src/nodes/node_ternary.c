@@ -2,11 +2,23 @@
 
 bool processNode_Ternary(Node* node) {
     bool valid_until_now = true;
-    if(!processNode(node->in.slot_0.node)) {
+    Node* cond_node = node->in.slot_0.node;
+    if(!processNode(cond_node)) {
         valid_until_now = false;
     }
     if(valid_until_now) {
-        Node* expr_to_use = node->in.slot[getAsInt(node->in.slot_0.node) ? 1 : 2].node;
+        bool cond_value = false;
+        switch(cond_node->out.type) {
+            case VT_INT:
+                cond_value = getAsInt(cond_node);
+                break;
+            case VT_DOUBLE:
+                cond_value = getAsDouble(cond_node) != 0.0;
+                break;
+            default:
+                break;
+        }
+        Node* expr_to_use = node->in.slot[cond_value ? 1 : 2].node;
         if(!processNode(expr_to_use)) {
             valid_until_now = false;
         }
