@@ -87,7 +87,7 @@ multiplicative_expression
 	: cast_expression											{$$ = $1;}
 	| multiplicative_expression '*' cast_expression				{$$ = makeNode_2(&ast, createNode_Mult, $1, $3);}
 	| multiplicative_expression '/' cast_expression				{$$ = makeNode_2(&ast, createNode_Divide, $1, $3);}
-	| multiplicative_expression '%' cast_expression				{$$ = makeNode_0(&ast, createNode);}
+	| multiplicative_expression '%' cast_expression				{$$ = makeNode_2(&ast, createNode_Modulo, $1, $3);}
 	;
 
 additive_expression
