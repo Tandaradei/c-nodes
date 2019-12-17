@@ -1,6 +1,16 @@
 #include "node_ternary.h"
 
-bool processNode_Ternary(Node* node) {
+bool processNode_Ternary(Node* node, const PROCESS_MODE process_mode) {
+    if(process_mode == PM_TYPE_ONLY) {
+        bool all_ins_valid = processAllNodeInSlots(node, process_mode);
+        if(all_ins_valid) {
+            if(node->in.slot_1.node->out.type == node->in.slot_2.node->out.type) {
+                node->out.type = node->in.slot_1.node->out.type;
+                return true;
+            }
+        }
+        return false;
+    }
     bool valid_until_now = true;
     Node* cond_node = node->in.slot_0.node;
     if(!processNode(cond_node)) {
@@ -22,7 +32,6 @@ bool processNode_Ternary(Node* node) {
         if(!processNode(expr_to_use)) {
             valid_until_now = false;
         }
-        node->out.type = expr_to_use->out.type;
         node->out.value = expr_to_use->out.value;
     }
     return valid_until_now;
@@ -50,9 +59,10 @@ Node createNode_Ternary(Node* cond, Node* true_expr, Node* false_expr) {
             .slot_count = 3,
         }, 
         .out = {
-            .type = VT_UNPROCESSED,
+            .type = VT_ERROR,
             .value.i_value = 0,
             .is_lvalue = false,
+            .is_processed = false,
         },
         .processNode = processNode_Ternary,
         .text = "?:",

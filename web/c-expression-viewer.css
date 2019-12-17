@@ -31,6 +31,10 @@ body {
 	fill:red
 }
 
-.node.UNPROCESSED {
-    fill: white
+.node.processed {
+    opacity: 1.0;
+}
+
+.node.unprocessed {
+    opacity: 0.3;
 }

@@ -100,11 +100,14 @@ function plot(data, expr) {
       .append("circle")
       .attr("class", function(d) {
         console.log(d.data.name);
-        return "node " + d.data.type;
+        return "node " + d.data.type + " " + (d.data.processed ? "processed" : "unprocessed");
       })
       .attr("r", 10)
       .attr("cx", o.x)
-      .attr("cy", o.y);
+      .attr("cy", o.y)
+      .attr("opacity", function(d) {
+        return  ;
+      });
 
     node
       .append("text")

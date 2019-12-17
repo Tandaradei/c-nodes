@@ -33,12 +33,18 @@ typedef struct NodeOut {
     ValueType   type;
     Value       value;
     bool        is_lvalue;
+    bool        is_processed;
 } NodeOut;
+
+typedef enum PROCESS_MODE {
+    PM_TYPE_ONLY,
+    PM_FULL
+} PROCESS_MODE;
 
 typedef struct Node {
     NodeIn in;
     NodeOut out;
-    bool (*processNode)(Node* node);
+    bool (*processNode)(Node* node, const PROCESS_MODE process_mode);
     char text[20];
     void* additional_info;
     SymbolHandle symbol_handle;
@@ -53,7 +59,9 @@ bool checkNodeIn(const NodeIn node_in);
 
 ValueType getHighestValueType(const NodeIn node_in);
 
-bool processAllNodeInSlots(Node* node);
+bool findNodeValueType(Node* node);
+
+bool processAllNodeInSlots(Node* node, const PROCESS_MODE process_mode);
 bool processNode(Node* node);
 
 int getAsInt(const Node* node);

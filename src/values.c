@@ -5,7 +5,6 @@
 
 const char* getColorForValueType(ValueType value_type) {
     static const char* VALUE_TYPE_COLORS[] = {
-        "white",
         "red",
         "green",
         "blue",
@@ -21,7 +20,6 @@ const char* getColorForValueType(ValueType value_type) {
 
 const char* getStringForValueType(ValueType value_type) {
     static const char* VALUE_TYPE_NAMES[] = {
-        "UNPROCESSED",
         "ERROR",
         "int",
         "double",

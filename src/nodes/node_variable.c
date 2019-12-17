@@ -5,19 +5,21 @@
 
 #include "src/symtab.h"
 
-bool processNode_GetSymbol(Node* node) {
+bool processNode_GetSymbol(Node* node, const PROCESS_MODE process_mode) {
     SymbolTable* sym_tab = (SymbolTable*) node->additional_info;
     if(!sym_tab) {
         return false;
     }
-    SymbolHandle handle = getSymbolHandle(sym_tab, node->text); // TODO: not perfect, 'text' has to be the exact identifier
+    SymbolHandle handle = getSymbolHandle(sym_tab, node->text);
     SymbolValue sym_value = getSymbolValue(sym_tab, handle);
     node->out.type = sym_value.type;
-    node->out.is_lvalue = !sym_value.is_const; 
-    if(node->out.is_lvalue) {
-        node->symbol_handle = handle;
-    } 
-    node->out.value = sym_value.value;
+    if(process_mode == PM_FULL) {
+        node->out.is_lvalue = !sym_value.is_const; 
+        if(node->out.is_lvalue) {
+            node->symbol_handle = handle;
+        } 
+        node->out.value = sym_value.value;
+    }
     return true;
 }
 
@@ -27,8 +29,10 @@ Node createNode_GetSymbol(const char* identifier) {
             .slot_count = 0,
         }, 
         .out = {
-            .type = VT_UNPROCESSED,
-            .value.i_value = 0
+            .type = VT_ERROR,
+            .value.i_value = 0,
+            .is_lvalue = false,
+            .is_processed = false,
         },
         .processNode = processNode_GetSymbol,
         .additional_info = NULL,
@@ -38,8 +42,8 @@ Node createNode_GetSymbol(const char* identifier) {
     return node;
 }
 
-bool processNode_Assign(Node* node) {
-    bool all_ins_valid = processAllNodeInSlots(node);
+bool processNode_Assign(Node* node, const PROCESS_MODE process_mode) {
+    bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;
     }
@@ -49,6 +53,10 @@ bool processNode_Assign(Node* node) {
     }
     const SymbolHandle handle = node->in.slot_0.node->symbol_handle;
     ValueType type = node->in.slot_0.node->out.type;
+    node->out.type = type;
+    if(process_mode == PM_TYPE_ONLY) {
+        return type != VT_ERROR;
+    }
     UpdateSymbolValue_Result result = USVR_SUCCESS;
     int i_value = getAsInt(node->in.slot_1.node);
     double d_value = getAsDouble(node->in.slot_1.node);
@@ -56,12 +64,10 @@ bool processNode_Assign(Node* node) {
         case VT_INT:
             result = updateSymbolValue_Int(sym_tab, handle, i_value);
             node->out.value.i_value = i_value;
-            node->out.type = VT_INT;
             break;
         case VT_DOUBLE:
             result = updateSymbolValue_Double(sym_tab, handle, d_value);
             node->out.value.d_value = d_value;
-            node->out.type = VT_DOUBLE;
             break;
         default:
             result = USVR_TYPE_MISMATCH;
@@ -85,9 +91,10 @@ Node createNode_Assign(Node* node_target, Node* node_value) {
             .slot_count = 2,
         }, 
         .out = {
-            .type = VT_UNPROCESSED,
+            .type = VT_ERROR,
             .value.i_value = 0,
             .is_lvalue = false,
+            .is_processed = false,
         },
         .processNode = processNode_Assign,
         .text = "=",

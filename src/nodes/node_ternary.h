@@ -3,7 +3,7 @@
 
 #include "node.h"
 
-bool processNode_Ternary(Node* node);
+bool processNode_Ternary(Node* node, const PROCESS_MODE process_mode);
 Node createNode_Ternary(Node* cond, Node* true_expr, Node* false_expr);
 
 #endif // NODE_TERNARY_H

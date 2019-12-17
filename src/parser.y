@@ -133,12 +133,12 @@ inclusive_or_expression
 
 logical_and_expression
 	: inclusive_or_expression									{$$ = $1;}
-	| logical_and_expression AND_OP inclusive_or_expression		{$$ = makeNode_0(&ast, createNode);}
+	| logical_and_expression AND_OP inclusive_or_expression		{$$ = makeNode_2(&ast, createNode_BoolAnd, $1, $3);}
 	;
 
 logical_or_expression
 	: logical_and_expression									{$$ = $1;}
-	| logical_or_expression OR_OP logical_and_expression		{$$ = makeNode_0(&ast, createNode);}
+	| logical_or_expression OR_OP logical_and_expression		{$$ = makeNode_2(&ast, createNode_BoolOr, $1, $3);}
 	;
 
 conditional_expression
@@ -260,7 +260,7 @@ int main(unsigned int argc, char** argv) {
 	yy_scan_string(args.expr.value.as_string);
 	int rc = yyparse();
 	if (rc == 0) {
-
+		findNodeValueType(root_node);
 		processNode(root_node);
 
 		if(args.tex.is_set) {

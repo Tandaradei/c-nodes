@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-bool processNode_Value(Node* node) {
+bool processNode_Value(Node* node, const PROCESS_MODE process_mode) {
     return true;
 }
 
@@ -16,7 +16,9 @@ Node createNode_ValueInt(const int value) {
         }, 
         .out = {
             .type = VT_INT,
-            .value.i_value = value
+            .value.i_value = value,
+            .is_lvalue = false,
+            .is_processed = false,
         },
         .processNode = processNode_Value,
         .additional_info = NULL,
@@ -34,7 +36,9 @@ Node createNode_ValueDouble(const double value) {
         }, 
         .out = {
             .type = VT_DOUBLE,
-            .value.d_value = value
+            .value.d_value = value,
+            .is_lvalue = false,
+            .is_processed = false,
         },
         .processNode = processNode_Value,
         .additional_info = NULL,

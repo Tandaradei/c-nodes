@@ -5,13 +5,16 @@
 #include "node.h"
 
 #define NODE_ARITHMETIC(OPERATOR, NAME) \
-bool processNode_##NAME(Node* node) { \
-    bool all_ins_valid = processAllNodeInSlots(node); \
+bool processNode_##NAME(Node* node, const PROCESS_MODE process_mode) { \
+    bool all_ins_valid = processAllNodeInSlots(node, process_mode); \
     if(!all_ins_valid) { \
         return false; \
     } \
-    ValueType type = getHighestValueType(node->in);\
+    ValueType type = getHighestValueType(node->in); \
     node->out.type = type;\
+    if(process_mode == PM_TYPE_ONLY) { \
+        return node->out.type != VT_ERROR; \
+    } \
     switch (type) {\
         case VT_INT:\
             node->out.value.i_value = getAsInt(node->in.slot[0].node) OPERATOR getAsInt(node->in.slot[1].node);\
@@ -33,8 +36,10 @@ Node createNode_##NAME##_Empty() { \
             .slot_count = 2, \
         }, \
         .out = { \
-            .type = VT_UNPROCESSED, \
-            .value.i_value = 0 \
+            .type = VT_ERROR, \
+            .value.i_value = 0, \
+            .is_lvalue = false, \
+            .is_processed = false, \
         }, \
         .processNode = processNode_##NAME, \
         .text = #OPERATOR, \

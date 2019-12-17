@@ -72,6 +72,7 @@ add_executable(${PROJECT_NAME}
     src/nodes/node_integer_ops.c
     src/nodes/node_variable.c
     src/nodes/node_ternary.c
+    src/nodes/node_bool_ops.c
     src/__generated__/scanner.c
     src/__generated__/parser.c
 )

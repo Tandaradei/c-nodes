@@ -1,9 +1,10 @@
 #include "node.h"
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 
-bool processNodeDefault(Node* node) {
+bool processNodeDefault(Node* node, const PROCESS_MODE process_mode) {
     return true;
 }
 
@@ -13,8 +14,10 @@ Node createNode(void) {
             .slot_count = 0,
         },
         .out = {
-            .type = VT_UNPROCESSED,
+            .type = VT_ERROR,
             .value.i_value = 0,
+            .is_lvalue = false,
+            .is_processed = false,
         },
         .processNode = processNodeDefault,
         .text = "Default",
@@ -38,8 +41,10 @@ Node createNode_BasicBinary(Node* node_0, Node* node_1) {
             .slot_count = 2,
         },
         .out = {
-            .type = VT_UNPROCESSED,
+            .type = VT_ERROR,
             .value.i_value = 0,
+            .is_lvalue = false,
+            .is_processed = false,
         },
         .processNode = processNodeDefault,
         .text = "BasicBinary",
@@ -71,21 +76,46 @@ ValueType getHighestValueType(const NodeIn node_in) {
     return type;
 }
 
-bool processAllNodeInSlots(Node* node) {
-    for(unsigned int i = 0; i < node->in.slot_count; i++) {
-        if(!processNode(node->in.slot[i].node)) {
-            return false;
-        }
+bool findNodeValueType(Node* node) {
+    if(node->processNode && node->processNode(node, PM_TYPE_ONLY)) {
+        return true;
     }
-    return true;
+    node->out.type = VT_ERROR;
+    return false;
+}
+
+bool processAllNodeInSlots(Node* node, const PROCESS_MODE process_mode) {
+    switch (process_mode)
+    {
+    case PM_TYPE_ONLY:
+        for(unsigned int i = 0; i < node->in.slot_count; i++) {
+            if(!findNodeValueType(node->in.slot[i].node)) {
+                return false;
+            }
+        }
+        return true;
+        break;
+    
+    case PM_FULL:
+        for(unsigned int i = 0; i < node->in.slot_count; i++) {
+            if(!processNode(node->in.slot[i].node)) {
+                return false;
+            }
+        }
+        return true;
+        break;
+    }
+    
 }
 
 bool processNode(Node* node) {
-    bool is_successful = node->processNode && node->processNode(node);
-    if(!is_successful) {
-        node->out.type = VT_ERROR;
+    assert(!node->out.is_processed);
+    node->out.is_processed = true;
+    if(node->processNode && node->processNode(node, PM_FULL)) {
+        return true;        
     }
-    return is_successful;
+    node->out.type = VT_ERROR;
+    return false;
 }
 
 
@@ -107,9 +137,6 @@ double getAsDouble(const Node* node) {
 
 void printNodeValue(FILE* file, const NodeOut node_out) {
     switch (node_out.type) {
-    case VT_UNPROCESSED:
-        PRINT(file, "UNPROCESSED");
-        break;
     case VT_ERROR:
         PRINT(file, "ERROR");
         break;
@@ -123,7 +150,7 @@ void printNodeValue(FILE* file, const NodeOut node_out) {
 }
 
 void printNodeType(FILE* file, const NodeOut node_out) {
-    PRINT(file, getStringForValueType(node_out.type));
+    PRINT(file, "%s", getStringForValueType(node_out.type));
 }
 
 void printNodeRecursively_Basic(const Node* node, const uint8_t depth) {
@@ -180,6 +207,7 @@ void printNodeRecursively_D3Json(FILE* file, const Node* node, const uint8_t dep
     PRINT(file, "%s  \"type\": \"", &"              "[14-depth]);
     printNodeType(file, node->out);
     PRINT(file, "\",\n");
+    PRINT(file, "%s  \"processed\": %s,\n", &"              "[14-depth], node->out.is_processed ? "true" : "false");
     PRINT(file, "%s  \"children\":[", &"              "[14-depth]);
     if(node->in.slot_count > 0) {
         PRINT(file, "\n");

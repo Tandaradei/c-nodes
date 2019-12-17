@@ -2,10 +2,9 @@
 #define VALUES_H
 
 typedef enum ValueType {
-    VT_UNPROCESSED = 0,
-    VT_ERROR = 1,
-    VT_INT = 2,
-    VT_DOUBLE = 4,
+    VT_ERROR = 0,
+    VT_INT = 1,
+    VT_DOUBLE = 2,
 } ValueType;
 
 typedef union Value {

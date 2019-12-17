@@ -7,5 +7,6 @@
 #include "node_integer_ops.h"
 #include "node_variable.h"
 #include "node_ternary.h"
+#include "node_bool_ops.h"
 
 #endif // NODES_LIST_H
