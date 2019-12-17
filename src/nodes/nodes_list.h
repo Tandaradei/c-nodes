@@ -8,5 +8,6 @@
 #include "node_variable.h"
 #include "node_ternary.h"
 #include "node_bool_ops.h"
+#include "node_compare.h"
 
 #endif // NODES_LIST_H
