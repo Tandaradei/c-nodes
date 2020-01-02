@@ -8,6 +8,7 @@
 bool processNode_GetSymbol(Node* node, const PROCESS_MODE process_mode) {
     SymbolTable* sym_tab = (SymbolTable*) node->additional_info;
     if(!sym_tab) {
+        strcpy(node->error, "DEBUG: No reference to symbol table");
         return false;
     }
     SymbolHandle handle = getSymbolHandle(sym_tab, node->text);
@@ -36,6 +37,7 @@ Node createNode_GetSymbol(const char* identifier) {
         },
         .processNode = processNode_GetSymbol,
         .additional_info = NULL,
+        .error = "",
         .symbol_handle = 0,
     };
     strcpy(node.text, identifier);
@@ -49,6 +51,7 @@ bool processNode_Assign(Node* node, const PROCESS_MODE process_mode) {
     }
     SymbolTable* sym_tab = (SymbolTable*) node->in.slot_0.node->additional_info;
     if(!sym_tab) {
+        strcpy(node->error, "DEBUG: No reference to symbol table");
         return false;
     }
     const SymbolHandle handle = node->in.slot_0.node->symbol_handle;
@@ -98,6 +101,7 @@ Node createNode_Assign(Node* node_target, Node* node_value) {
         },
         .processNode = processNode_Assign,
         .text = "=",
+        .error = "",
         .additional_info = NULL,
         .symbol_handle = 0,
     };

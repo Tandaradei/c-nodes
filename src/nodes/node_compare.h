@@ -44,6 +44,7 @@ Node createNode_##NAME(Node* node_0, Node* node_1) { \
         }, \
         .processNode = processNode_##NAME, \
         .text = #OPERATOR, \
+        .error = "", \
         .additional_info = NULL,\
     }; \
 } \

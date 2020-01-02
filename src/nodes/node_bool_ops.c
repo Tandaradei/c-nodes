@@ -58,6 +58,7 @@ Node createNode_BoolAnd(Node* node_0, Node* node_1) {
         },
         .processNode = processNode_BoolAnd,
         .text = "&&",
+        .error = "",
         .additional_info = NULL,
     };
 }
@@ -119,6 +120,7 @@ Node createNode_BoolOr(Node* node_0, Node* node_1) {
         },
         .processNode = processNode_BoolOr,
         .text = "||",
+        .error = "",
         .additional_info = NULL,
     };
 }

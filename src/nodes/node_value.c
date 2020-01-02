@@ -21,6 +21,7 @@ Node createNode_ValueInt(const int value) {
             .is_processed = false,
         },
         .processNode = processNode_Value,
+        .error = "",
         .additional_info = NULL,
     };
     strcpy(node.text, converted_value);
@@ -41,6 +42,7 @@ Node createNode_ValueDouble(const double value) {
             .is_processed = false,
         },
         .processNode = processNode_Value,
+        .error = "",
         .additional_info = NULL,
     };
     strcpy(node.text, converted_value);

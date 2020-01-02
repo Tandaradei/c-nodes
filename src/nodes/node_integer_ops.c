@@ -12,6 +12,7 @@ bool processNode_IncrementPre(Node* node, const PROCESS_MODE process_mode) {
     SymbolHandle handle = node->in.slot_0.node->symbol_handle;
     SymbolTable* sym_tab = (SymbolTable*)node->in.slot_0.node->additional_info;
     if(!sym_tab) {
+        strcpy(node->error, "DEBUG: No reference to symbol table");
         return false;
     }
     Value new_value;
@@ -52,6 +53,7 @@ Node createNode_IncrementPre(Node* node_0) {
         },
         .processNode = processNode_IncrementPre,
         .text = "++(pre)",
+        .error = "",
         .additional_info = NULL,
     };
 }
@@ -68,6 +70,7 @@ bool processNode_IncrementPost(Node* node, const PROCESS_MODE process_mode) {
     SymbolHandle handle = node->in.slot_0.node->symbol_handle;
     SymbolTable* sym_tab = (SymbolTable*)node->in.slot_0.node->additional_info;
     if(!sym_tab) {
+        strcpy(node->error, "DEBUG: No reference to symbol table");
         return false;
     }
     Value value;
@@ -108,6 +111,7 @@ Node createNode_IncrementPost(Node* node_0) {
         },
         .processNode = processNode_IncrementPost,
         .text = "(post)++",
+        .error = "",
         .additional_info = NULL,
     };
 }
@@ -124,6 +128,7 @@ bool processNode_DecrementPre(Node* node, const PROCESS_MODE process_mode) {
     SymbolHandle handle = node->in.slot_0.node->symbol_handle;
     SymbolTable* sym_tab = (SymbolTable*)node->in.slot_0.node->additional_info;
     if(!sym_tab) {
+        strcpy(node->error, "DEBUG: No reference to symbol table");
         return false;
     }
     Value new_value;
@@ -164,6 +169,7 @@ Node createNode_DecrementPre(Node* node_0) {
         },
         .processNode = processNode_DecrementPre,
         .text = "--(pre)",
+        .error = "",
         .additional_info = NULL,
     };
 }
@@ -180,6 +186,7 @@ bool processNode_DecrementPost(Node* node, const PROCESS_MODE process_mode) {
     SymbolHandle handle = node->in.slot_0.node->symbol_handle;
     SymbolTable* sym_tab = (SymbolTable*)node->in.slot_0.node->additional_info;
     if(!sym_tab) {
+        strcpy(node->error, "DEBUG: No reference to symbol table");
         return false;
     }
     Value value;
@@ -220,6 +227,7 @@ Node createNode_DecrementPost(Node* node_0) {
         },
         .processNode = processNode_DecrementPost,
         .text = "(post)--",
+        .error = "",
         .additional_info = NULL,
     };
 }
