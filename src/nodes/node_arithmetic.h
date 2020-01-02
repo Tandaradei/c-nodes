@@ -43,6 +43,7 @@ Node createNode_##NAME(Node* node_0, Node* node_1) { \
         }, \
         .processNode = processNode_##NAME, \
         .text = #OPERATOR, \
+        .error = "", \
         .additional_info = NULL,\
     }; \
 } \
@@ -56,20 +57,18 @@ bool processNode_Modulo(Node* node, const PROCESS_MODE process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode); 
     if(!all_ins_valid) { 
         return false; 
-    } 
+    }
     ValueType type = getHighestValueType(node->in); 
     node->out.type = type;
-    if(process_mode == PM_TYPE_ONLY) { 
+    if(type != VT_INT) {
+        strcpy(node->error, "Both children must be of type 'int'");
+        return false;
+    }
+    if(process_mode == PM_TYPE_ONLY) {
         return true; 
     } 
-    switch (type) {
-        case VT_INT:
-            node->out.value.i_value = getAsInt(node->in.slot[0].node) % getAsInt(node->in.slot[1].node);
-            break;
-        default:
-        return false;
-            break; 
-    }
+    // Value deduction
+    node->out.value.i_value = getAsInt(node->in.slot[0].node) % getAsInt(node->in.slot[1].node);
     return true;
 }
 
@@ -88,6 +87,7 @@ Node createNode_Modulo(Node* node_0, Node* node_1) {
         }, 
         .processNode = processNode_Modulo, 
         .text = "%", 
+        .error = "",
         .additional_info = NULL,
     }; 
 } 

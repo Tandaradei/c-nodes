@@ -122,12 +122,18 @@ function plot(data, expr) {
     node
       .append("text")
       .text(function(d) {
-        return d.data.result;
+        return d.data.type !== "ERROR" ? d.data.result : "";
       })
       .attr("x", o.x)
       .attr("dx", -5)
       .attr("dy", -12)
       .attr("y", o.y);
+
+      node
+        .append("title")
+        .text(function(d) {
+          return d.data.error;
+        })
   });
 }
 

@@ -46,6 +46,7 @@ typedef struct Node {
     NodeOut out;
     bool (*processNode)(Node* node, const PROCESS_MODE process_mode);
     char text[20];
+    char error[200];
     void* additional_info;
     SymbolHandle symbol_handle;
 } Node;

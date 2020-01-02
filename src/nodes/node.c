@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 bool processNodeDefault(Node* node, const PROCESS_MODE process_mode) {
     return true;
@@ -21,6 +22,7 @@ Node createNode(void) {
         },
         .processNode = processNodeDefault,
         .text = "Default",
+        .error = "DEBUG: This node wasn't properly initialized",
         .additional_info = NULL,
     };
 }
@@ -77,23 +79,32 @@ ValueType getHighestValueType(const NodeIn node_in) {
 }
 
 bool findNodeValueType(Node* node) {
-    if(node->processNode && node->processNode(node, PM_TYPE_ONLY)) {
-        return true;
+    if(node->processNode) {
+        if( node->processNode(node, PM_TYPE_ONLY)) {
+            return true;
+        }
+    }
+    else {
+        strcpy(node->error, "DEBUG: Can't find processing function for this node");
     }
     node->out.type = VT_ERROR;
+    if(node->error[0] == '\0') {
+        strcpy(node->error, "Compile error in children (can't get type for this node)");
+    }
     return false;
 }
 
 bool processAllNodeInSlots(Node* node, const PROCESS_MODE process_mode) {
+    bool type_deduction_result = true;
     switch (process_mode)
     {
     case PM_TYPE_ONLY:
         for(unsigned int i = 0; i < node->in.slot_count; i++) {
             if(!findNodeValueType(node->in.slot[i].node)) {
-                return false;
+                type_deduction_result = false;
             }
         }
-        return true;
+        return type_deduction_result;
         break;
     
     case PM_FULL:
@@ -111,10 +122,18 @@ bool processAllNodeInSlots(Node* node, const PROCESS_MODE process_mode) {
 bool processNode(Node* node) {
     assert(!node->out.is_processed);
     node->out.is_processed = true;
-    if(node->processNode && node->processNode(node, PM_FULL)) {
-        return true;        
+    if(node->processNode) {
+        if( node->processNode(node, PM_FULL)) {
+            return true;
+        }
+    }
+    else {
+        strcpy(node->error, "DEBUG: Can't find processing function for this node");
     }
     node->out.type = VT_ERROR;
+    if(node->error[0] == '\0') {
+        strcpy(node->error, "Runtime error in children (can't get value for this node)");
+    }
     return false;
 }
 
@@ -138,10 +157,10 @@ double getAsDouble(const Node* node) {
 void printNodeValue(FILE* file, const NodeOut node_out) {
     switch (node_out.type) {
     case VT_ERROR:
-        PRINT(file, "ERROR");
+        PRINT(file, " ");
         break;
     case VT_INT:
-        PRINT(file, "%d",node_out.value.i_value);
+        PRINT(file, "%d", node_out.value.i_value);
         break;
     case VT_DOUBLE:
         PRINT(file, "%f", node_out.value.d_value);
@@ -204,6 +223,7 @@ void printNodeRecursively_D3Json(FILE* file, const Node* node, const uint8_t dep
     PRINT(file, "%s  \"result\": \"", &"              "[14-depth]);
     printNodeValue(file, node->out);
     PRINT(file, "\",\n");
+    PRINT(file, "%s  \"error\": \"%s\",\n", &"              "[14-depth], node->error)
     PRINT(file, "%s  \"type\": \"", &"              "[14-depth]);
     printNodeType(file, node->out);
     PRINT(file, "\",\n");

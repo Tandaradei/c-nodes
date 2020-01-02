@@ -184,11 +184,12 @@ type_name
 extern char yytext[];
 extern int column;
 
+char yyerror_value[200] = "";
+
 void yyerror(s)
 char *s;
 {
-	fflush(stdout);
-	printf("\n%*s\n%*s\n", column, "^", column, s);
+	strcpy(yyerror_value, s);
 }
 
 int yyparse();
@@ -260,8 +261,9 @@ int main(unsigned int argc, char** argv) {
 	yy_scan_string(args.expr.value.as_string);
 	int rc = yyparse();
 	if (rc == 0) {
-		findNodeValueType(root_node);
-		processNode(root_node);
+		if(findNodeValueType(root_node)) {
+			processNode(root_node);
+		}
 
 		if(args.tex.is_set) {
 			//printf("<Tex>\n");
@@ -289,7 +291,19 @@ int main(unsigned int argc, char** argv) {
 		}
 	}
 	else {
-		printf("Syntaxfehler\n");
+		if(args.d3.is_set) {
+			char* expr = args.expr.value.as_string;
+			int col = column - 1;
+			const int window_size = 5;
+			printf("{\"name\": \"parse error on column %d\", \"type\": \"ERROR\", \"error\": \"%s%.*s    %c    %.*s%s\"}", 
+				col + 1, 
+				col > window_size ? "..." : "",
+				col > window_size ? window_size : col, col > window_size ? expr + (col - window_size) : expr,
+				expr[col],
+				window_size, expr + (col + 1),
+				col + window_size < strlen(expr) ? "..." : ""
+			);
+		}
 	}
 	yylex_destroy();
 	
