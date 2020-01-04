@@ -80,7 +80,7 @@ unary_operator
 
 cast_expression
 	: unary_expression											{$$ = $1;}
-	| '(' type_name ')' cast_expression							{$$ = makeNode_0(&ast, createNode);} // Todo!
+	| '(' type_name ')' cast_expression							{$$ = makeNode_1_STRING(&ast, createNode_Cast, $4, $2);}
 	;
 
 multiplicative_expression

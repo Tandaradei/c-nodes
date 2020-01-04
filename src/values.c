@@ -32,3 +32,13 @@ const char* getStringForValueType(ValueType value_type) {
     }
     return VALUE_TYPE_NAMES[index];
 }
+
+ValueType getValueTypeForString(const char* typename) {
+    if(!strcmp(typename, "int")) {
+        return VT_INT;
+    }
+    else if(!strcmp(typename, "double")) {
+        return VT_DOUBLE;
+    }
+    return VT_ERROR;
+}
