@@ -10,5 +10,6 @@
 #include "node_bool_ops.h"
 #include "node_compare.h"
 #include "node_cast.h"
+#include "node_function.h"
 
 #endif // NODES_LIST_H

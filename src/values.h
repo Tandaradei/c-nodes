@@ -16,4 +16,6 @@ const char* getColorForValueType(ValueType value_type);
 const char* getStringForValueType(ValueType value_type);
 ValueType getValueTypeForString(const char* typename);
 
+void writeValue(char* dest, ValueType type, Value value);
+
 #endif // VALUES_H

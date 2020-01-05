@@ -31,7 +31,7 @@ void yyerror(char *);
 %type<node> logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression
 %type<node> and_expression equality_expression relational_expression shift_expression
 %type<node> additive_expression multiplicative_expression cast_expression
-%type<node> postfix_expression
+%type<node> argument_expression_list postfix_expression
 %type<txt> assignment_operator type_name unary_operator
 %%
 start	: expression {root_node = $1;}
@@ -47,8 +47,8 @@ primary_expression
 postfix_expression
 : primary_expression										{$$ = $1;}
 	| postfix_expression '[' expression ']'					{$$ = makeNode_0(&ast, createNode);}
-	| postfix_expression '(' ')'							{$$ = makeNode_0(&ast, createNode);} // ToDo
-	| postfix_expression '(' argument_expression_list ')'	{$$ = makeNode_0(&ast, createNode);} // ToDo
+	| IDENTIFIER '(' ')'									{$$ = makeNode_0_STRING(&ast, createNode_FunctionEmpty, $1);}
+	| IDENTIFIER '(' argument_expression_list ')'			{$$ = makeNode_1_STRING(&ast, createNode_Function, $3, $1);}
 	| postfix_expression '.' IDENTIFIER						{$$ = makeNode_0(&ast, createNode);} // ToDo
 	| postfix_expression PTR_OP IDENTIFIER					{$$ = makeNode_0(&ast, createNode);}
 	| postfix_expression INC_OP								{$$ = makeNode_1(&ast, createNode_IncrementPost, $1);}
@@ -56,8 +56,8 @@ postfix_expression
 	;
 
 argument_expression_list
-	: assignment_expression
-	| argument_expression_list ',' assignment_expression
+	: assignment_expression									{$$ = makeNode_1(&ast, createNode_Argument, $1);}
+	| assignment_expression ',' argument_expression_list	{$$ = makeNode_2(&ast, createNode_ArgumentList, $1, $3);}
 	;
 
 unary_expression

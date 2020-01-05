@@ -74,6 +74,9 @@ add_executable(${PROJECT_NAME}
     src/nodes/node_ternary.c
     src/nodes/node_bool_ops.c
     src/nodes/node_cast.c
+    src/nodes/node_function.c
     src/__generated__/scanner.c
     src/__generated__/parser.c
 )
+
+target_link_libraries(${PROJECT_NAME} m)
