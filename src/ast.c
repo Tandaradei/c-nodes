@@ -83,3 +83,13 @@ Node* makeNode_1_STRING(AbstractSyntaxTree* ast, Node (*createNode)(Node* node_0
     PRINT_DEBUG("Failed to insert node from makeNode_1_STRING");
     return NULL;
 }
+
+Node* makeNode_2_STRING(AbstractSyntaxTree* ast, Node (*createNode)(Node* node_0, Node* node_1, const char* value), Node* node_0, Node* node_1, const char* value) {
+    if(ast->node_count < AST_MAX_NODES) {
+        ast->nodes[ast->node_count++] = createNode(node_0, node_1, value);
+        PRINT_DEBUG("Inserted node from makeNode_2_STRING on #%d\n", ast->node_count-1);
+        return &(ast->nodes[ast->node_count-1]);
+    }
+    PRINT_DEBUG("Failed to insert node from makeNode_2_STRING");
+    return NULL;
+}

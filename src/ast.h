@@ -20,5 +20,6 @@ Node* makeNode_0_INT(AbstractSyntaxTree* ast, Node (*createNode)(const int value
 Node* makeNode_0_DOUBLE(AbstractSyntaxTree* ast, Node (*createNode)(const double value), const double value);
 Node* makeNode_0_STRING(AbstractSyntaxTree* ast, Node (*createNode)(const char* value), const char* value);
 Node* makeNode_1_STRING(AbstractSyntaxTree* ast, Node (*createNode)(Node* node_0, const char* value), Node* node_0, const char* value);
+Node* makeNode_2_STRING(AbstractSyntaxTree* ast, Node (*createNode)(Node* node_0, Node* node_1, const char* value), Node* node_0, Node* node_1, const char* value);
 
 #endif // AST_H
