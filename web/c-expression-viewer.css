@@ -3,6 +3,13 @@ body {
     font: 12px courier;
 }
 
+td:before {
+    content: '';
+    display: block; 
+    width: 15em;
+    align-content: center;
+  }
+
 .link {
     fill: none;
     stroke: #A0A0A0;
@@ -24,7 +31,7 @@ body {
 }
 
 .node.double {
-	fill:blue
+	fill:cyan
 }
 
 .node.ERROR {

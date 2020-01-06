@@ -12,6 +12,10 @@ bool processNode_GetSymbol(Node* node, const PROCESS_MODE process_mode) {
         return false;
     }
     SymbolHandle handle = getSymbolHandle(sym_tab, node->text);
+    if(handle.value == 0) {
+        sprintf(node->error, "There's no variable named '%s'", node->text);
+        return false;
+    }
     SymbolValue sym_value = getSymbolValue(sym_tab, handle);
     node->out.type = sym_value.type;
     if(process_mode == PM_FULL) {

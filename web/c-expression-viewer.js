@@ -1,5 +1,6 @@
 var margin, width, height;
 var orientations, svg;
+var var_count = 0;
 
 function init() {
   (margin = { top: 100, right: 10, bottom: 240, left: 10 }),
@@ -149,11 +150,16 @@ function test(h) {
     var params = {
       expr: document.getElementById("expr").value
     };
-    if(vars.children.length > 0) {
+    var vars = document.getElementById("vars");
+    if(vars && vars.children.length > 0) {
       var symbols = "";
       console.log(vars);
       for(i in vars.children) {
+        var temp_symbol = "";
         for(u in vars.children[i].children) {
+          if(u >= 4) {
+            break;
+          }
           var td = vars.children[i].children[u];
           console.log(td);
           if(typeof td === "object" && td.children.length > 0) {
@@ -162,11 +168,18 @@ function test(h) {
               node.checked ? "1" : "0" :
               node.value;
             console.log(value);
-            symbols += value +",";
+            if(value.length === 0) {
+              temp_symbol = "";
+              break;
+            }
+            temp_symbol += value +",";
           }
         }
-        symbols = symbols.slice(0, symbols.length - 1);
-        symbols += ";";
+        console.log(temp_symbol);
+        if(temp_symbol.length > 0) {
+          symbols += temp_symbol.slice(0, temp_symbol.length - 1);
+          symbols += ";";
+        }
       }
       symbols = symbols.slice(0, symbols.length - 1);
       params["symbols"] = symbols;
@@ -184,9 +197,11 @@ function test(h) {
 }
 
 function addVariable() {
+  var var_id = var_count++;
   vars = document.getElementById("vars");
   
   var new_var = document.createElement("tr");
+  new_var.setAttribute("id", "var_" + var_id);
   
   var identifier = document.createElement("input");
   identifier.setAttribute("type", "text");
@@ -218,6 +233,13 @@ function addVariable() {
   var is_const_td = document.createElement("td");
   is_const_td.appendChild(is_const);
   new_var.appendChild(is_const_td);
+
+  var remove = document.createElement("button");
+  remove.appendChild(document.createTextNode("Remove"));
+  remove.setAttribute("onClick", "document.getElementById('vars').removeChild(document.getElementById('var_" + var_id + "'));");
+  var remove_td = document.createElement("td");
+  remove_td.appendChild(remove);
+  new_var.appendChild(remove_td);
 
   vars.appendChild(new_var);
 }
