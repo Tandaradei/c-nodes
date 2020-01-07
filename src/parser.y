@@ -198,7 +198,7 @@ int yyparse();
 void printTex(FILE* file, Node* root_node) {
 	PRINT(file, "\\documentclass[border=10pt]{standalone}\n\\usepackage{tikz}\n\\begin{document}\n");
 	PRINT(file, "\\begin{tikzpicture}[sibling distance=10em, every node/.style = {shape=rectangle, rounded corners, draw, align=center}]]\n\\");
-	printNodeRecursively_Tikz(file, root_node, 0);
+	printNodeRecursively_Tex(file, root_node, 0);
 	PRINT(file, ";\n\\end{tikzpicture}\n");
 	PRINT(file, "\\end{document}\n");
 }
@@ -271,9 +271,9 @@ int main(unsigned int argc, char** argv) {
 			printTex(NULL, root_node);
 			//printf("</Tex>\n");
 		}
-		if(args.d3.is_set) {
+		if(args.json.is_set) {
 			//printf("<D3>\n");
-			printNodeRecursively_D3Json(NULL, root_node, 0);
+			printNodeRecursively_Json(NULL, root_node, 0);
 			//printf("</D3>\n");
 		}
 		
@@ -284,15 +284,15 @@ int main(unsigned int argc, char** argv) {
 			fclose(file);
 			file = NULL;
 		}
-		if(args.d3_file.is_set) {
-			file = fopen(args.d3_file.value.as_string, "w");
-			printNodeRecursively_D3Json(file, root_node, 0);
+		if(args.json_file.is_set) {
+			file = fopen(args.json_file.value.as_string, "w");
+			printNodeRecursively_Json(file, root_node, 0);
 			fclose(file);
 			file = NULL;
 		}
 	}
 	else {
-		if(args.d3.is_set) {
+		if(args.json.is_set) {
 			char* expr = args.expr.value.as_string;
 			int col = column - 1;
 			const int window_size = 5;

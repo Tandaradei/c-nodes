@@ -198,7 +198,7 @@ void printNodeRecursively_Enhanced(const Node* node, const uint8_t depth) {
     }
 }
 
-void printNodeRecursively_Tikz(FILE* file, const Node* node, const uint8_t depth) {
+void printNodeRecursively_Tex(FILE* file, const Node* node, const uint8_t depth) {
     if(!node) {
         return;
     }
@@ -209,13 +209,13 @@ void printNodeRecursively_Tikz(FILE* file, const Node* node, const uint8_t depth
         PRINT(file, "\n");
         for(unsigned int i = 0; i < node->in.slot_count; i++) {
             PRINT(file, "%schild { ", &"              "[14-depth]);
-            printNodeRecursively_Tikz(file, node->in.slot[i].node, depth + 1);
+            printNodeRecursively_Tex(file, node->in.slot[i].node, depth + 1);
             PRINT(file, "%s}\n", &"              "[14-depth]);
         }
     }
 }
 
-void printNodeRecursively_D3Json(FILE* file, const Node* node, const uint8_t depth) {
+void printNodeRecursively_Json(FILE* file, const Node* node, const uint8_t depth) {
     if(!node) {
         return;
     }
@@ -232,7 +232,7 @@ void printNodeRecursively_D3Json(FILE* file, const Node* node, const uint8_t dep
     if(node->in.slot_count > 0) {
         PRINT(file, "\n");
         for(unsigned int i = 0; i < node->in.slot_count; i++) {
-            printNodeRecursively_D3Json(file, node->in.slot[i].node, depth + 1);
+            printNodeRecursively_Json(file, node->in.slot[i].node, depth + 1);
             PRINT(file, "%s", i < node->in.slot_count - 1 ? ",\n" : "");
         }
         PRINT(file, "\n%s]}\n", &"              "[14-depth]);

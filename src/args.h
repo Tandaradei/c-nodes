@@ -9,9 +9,9 @@ typedef union MyArgs {
     struct {
         Arg expr;
         Arg symbols;
-        Arg d3;
+        Arg json;
         Arg tex;
-        Arg d3_file;
+        Arg json_file;
         Arg tex_file;
     };
 } MyArgs;
@@ -28,16 +28,16 @@ MyArgs parseArgs(unsigned int argc, char** argv) {
             .type = ArgType_String,
             .value.as_string = "",
         },
-        .d3 = {
-            .name = "-d3",
+        .json = {
+            .name = "-json",
             .type = ArgType_Flag
         },
         .tex = {
             .name = "-tex",
             .type = ArgType_Flag,
         },
-        .d3_file = {
-            .name = "-d3_file",
+        .json_file = {
+            .name = "-json_file",
             .type = ArgType_String,
             .value.as_string = "output.json",
         },
