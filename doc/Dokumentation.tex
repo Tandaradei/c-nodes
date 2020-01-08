@@ -1,6 +1,9 @@
 \documentclass[oneside]{ausarbeitung}
 \bibliography{latexlit}
 
+\usepackage{hyperref}
+\usepackage{tikz}
+
 % ----------------------------------------------------------------------
 
 \begin{document}
@@ -74,14 +77,14 @@ Länge: Maximal 1 Seite.
 %---
 \chapter*{Abkürzungsverzeichnis}
 \addcontentsline{toc}{chapter}{Abkürzungsverzeichnis}
-\begin{acronym}[Bsp.]  % Längstes Kürzel in der nachfolgenden
+\begin{acronym}[ANSI C / C89]  % Längstes Kürzel in der nachfolgenden
                        % Liste um die Breite der Spalte für die
                        % Abkürzungen zu bestimmen.
 
 %% Eintrag: \acro{Referenzname}[Kürzel]{Langform}
 %% Im Text wird die Abkürzung dann mit \ac{Referenzname} benutzt.
-\acro{rup}[RUP]{Rational Unified Process}
 \acro{bsp}[Bsp.]{Beispiel}
+\acro{rup}[RUP]{Ratified Unified Process}
 \end{acronym}
 %---
 \cleardoublepage
@@ -108,7 +111,7 @@ welcher Ablauf verbessert werden soll etc.
   \centering
   \includegraphics[width=0.8\textheight]{images/tree.pdf}
   \caption{Beispielausgabe in Tikz}
-  \label{fig:1}
+  \label{fig:motivation}
 \end{figure}
 
 \section{Problemstellung und -abgrenzung}
@@ -124,7 +127,7 @@ Erwartungen geweckt werden.
 \section{Ziel der Arbeit}
 \label{sec:ziel}
 
-Mit dem Ziel der Arbeit wird der angestrebte Lösungsumfang festgelegt. An diesem Ziel wird entschieden, ob das Praktikum erfolgreich absolviert wurde oder nicht.
+Es soll ein Werkzeug für Programmieranfänger erstellt werden, womit diese einen \hyperref[sub:c89]{C89 / ANSI C} \hyperref[sub:expression]{Ausdruck} analysieren können. Das Werkzeug soll den \hyperref[sub:expression]{Ausdruck} in einen \hyperref[sub:syntax_tree]{Syntaxbaum} mit Typinformationen umwandeln, d. h. für jeden Knoten im Syntaxbaum soll der Datentyp und der aktuelle Wert angezeigt werden. Außerdem sollen Fehler und ihre Folgen im Syntaxbaum ausdrücklich markiert und beschrieben werden.
 
 \section{Vorgehen}
 \label{sec:vorgehen}
@@ -161,26 +164,42 @@ wird das Werkzeug JabRef\autocite{JabRef:JabRef} verwendet.
 Sie können aber auch das Werkzeug Citavi\autocite{SAS:Citavi} benutzen
 und dort nach \textsc{Bib}\TeX{} exportieren.
 
+\section{Programmiersprachen}
+\label{sec:prog_langs}
+
+\subsection{C89 / ANSI C}
+\label{sub:c89}
+Erster offizieller Standard der C-Programmiersprache, der 1989 veröffentlicht wurde. Wird als Grundlage für die zu verarbeitenden Ausdrücke genommen.
+
+\subsection{C99}
+\label{sub:c99}
+Zweiter offizieller Standard der C-Programmiersprache, 1999 veröffentlicht. Mit diesem Standard wurde das Kommandozeilenprogramm der Projektarbeit geschrieben.
+
 \section{Compilerbau}
-\label{sec:compiler}
 
-\subsection{Scanner}
-\label{sub:scanner}
+\subsection{Ausdruck}
+\label{sub:expression}
+Eine Kombination von Konstanten, Variablen, Funktionsaufrufen und Operationen die einen Wert liefert.
+Ausdrücke an sich haben keinen direkten Einfluss auf den Programmfluss, anders wie Verzweigungen(if) oder Schleifen(while, for). <<TODO>>
 
-\subsection{Parser}
-\label{sub:parser}
+\subsection{Syntaxbaum}
+\label{sub:syntax_tree}
+Hierarchische Darstellung der Zergliederung des zu verarbeitenden Quellcodes.
 
-\subsection{Symboltabelle}
-\label{sub:symtab}
-
-\section{Ausgabeformate}
-\label{sec:outputformats}
-
-\subsection{Tikz}
-\label{sub:tikz}
-
-\subsection{D3-JSON}
-\label{sub:d3_json}
+\begin{figure}[htbp]
+\begin{tikzpicture}[sibling distance=10em, every node/.style = {shape=rectangle, rounded corners, draw, align=center}]]
+\node[fill=green, label={7}] { + }
+child { node[fill=green, label={1}] { 1 }}
+child { node[fill=green, label={6}] { * }
+ child { node[fill=green, label={2}] { 2 } }
+ child { node[fill=green, label={3}] { 3 } }
+}
+;
+\end{tikzpicture}
+\centering
+\caption{Syntaxbaum für den Ausdruck \textit{1 + 2 * 3}}
+\label{fig:example_syntax_tree}
+\end{figure}
 
 %---
 \chapter{Problemanalyse}
@@ -197,41 +216,38 @@ Bei Software-Projekten befindet sich an dieser Stelle typischerweise die
 Anforderungsanalyse des \ac{rup}.
 
 %---
-\chapter{Lösungskonzept}
-\label{cha:loesungskonzept}
-
-Auf der Basis der im vorangegangenen Kapitel erstellten Problemanalyse 
-und der im Grundlagenkapitel aufgearbeiteten theoretischen Kenntnisse 
-wird ein Lösungskonzept erarbeitet.
-
-Bei Software-Projekten entspricht dieses Kapitel typischerweise der 
-Analyse \& Design-Phase des \ac{rup}. Typische Ergebnisse dieser Phase sind 
-Klassendiagramme etc.
-
-%---
 \chapter{Implementierung}
 \label{cha:implementierung}
 
-In diesem Kapitel wird die konkrete Implementierung des im Kapitel
-\ref{cha:loesungskonzept} entwickelten Lösungskonzepts beschrieben.
-Hierbei wird auf die konkret verwendeten Entwicklungswerkzeuge etc. 
-Bezug genommen.
+Die Grundarchitektur des Lösungskonzeptes besteht aus einer klassischen Unterteilung in Front- und Backend. Das Frontend ist für die Datenabfrage und die Darstellung zuständig. Im Backend wiederum steckt die eigentliche Logik des Programms. Da das eigentliche Backend auch als eigenständiges Kommandozeilenprogramm funktionieren soll, wurde die Kommunikation mit dem Frontend auf ein Backend-Interface ausgelagert, die das Kommandozeilenprogramm auf dem Server aufruft und die Resultate zurück an das Frontend schickt.
+
+\begin{figure}
+\begin{tikzpicture}[sibling distance=10em, every node/.style = {shape=rectangle, draw, align=center}]]
+\node[fill=white, label={Frontend}] { HTML, CSS, JavaScript }
+child { node[fill=white, label={Backend-Interface}] { PHP } 
+ child { node[fill=white, label={Backend}] { C (flex, bison) } }
+}
+;
+\end{tikzpicture}
+\centering
+\caption{Grundarchitektur}
+\label{fig:architecture}
+\end{figure}
+
+\section{Frontend}
+\label{sec:frontend}
+Das gesamte Frontend besteht aus einer HTML-, einer CSS- und zwei JavaScript-Dateien (eine davon ist die zur Darstellung des Syntaxbaum verwendete \href{https://d3js.org}{D3.js} Bibliothek). Die HTML und CSS Dateien sind je unter 50 Quellcodezeilen lang und somit sehr trivial gehalten. In der eigenen JavaScript-Datei werden die Eingaben des Benutzers ausgelesen, formatiert und dann an das Backend geschickt. Die Antwort wird wiederum verwendet um den resultierenden Syntaxbaum zu zeichnen.
+
+\section{Backend-Interface}
+\label{sec:backend_interface}
+Das Backend-Interface besteht aus einer einzigen PHP-Datei, die im Grunde nichts anderes macht, als das eigentliche Backend mit den Parametern aus der Anfrage des Frontends aufzurufen und die Ergebnisse formatiert wieder ans Frontend zurückzuschicken.
+
+\section{Backend}
+\label{sec:backend}
+Der Großteil der Arbeit ist in das, auch eigenständig als Kommandozeilenprogramm benutzbare, Backend geflossen. Dieses nimmt grundlegend einen Ausdruck und eine Reihe von Symboldefinitionen(die auch leer sein kann) entgegen und gibt den resultierenden Syntaxbaum in einem der Formate (JSON oder tex) auf der Standardausgabe aus. Alternativ kann die Ausgabe auch direkt in eine Datei geschrieben werden.
 
 Bei Software-Projekten besteht dieses Kapitel typischerweise aus den 
 Phasen Implementierung \& Test im \ac{rup}.
-
-%---
-\chapter{Inbetriebnahme}
-\label{cha:inbetriebnahme}
-
-Aufgabe des Kapitels Inbetriebnahme ist es, die Überführung der in 
-Kapitel \ref{cha:implementierung} entwickelte Lösung in das betriebliche 
-Umfeld aufzuzeigen. Dabei wird beispielsweise die Inbetriebnahme eines 
-Programms beschrieben oder die Integration eines erstellten 
-Programmodules dargestellt.
-
-Bei der Software-Erstellung entspricht dieses Kapitel der 
-Auslieferungsphase (Deployment) im \ac{rup}.
 
 %---
 \chapter{Evaluierung}
@@ -258,14 +274,51 @@ dies nachgewiesen).
 \section{Ausblick}
 \label{sec:ausblick}
 
-Im Ausblick werden Ideen für die Weiterentwicklung der erstellten Lösung 
-aufgezeigt. Der Ausblick sollte daher zeigen, dass die Ergebnisse der 
-Arbeit nicht nur für die in der Arbeit identifizierten Problemstellungen 
-verwendbar sind, sondern darüber hinaus erweitert sowie auf andere 
-Probleme übertragen werden können.
-
 \subsection{Erweiterbarkeit der Ergebnisse}
 \label{sub:erweiterbarkeit}
+
+\subsubsection{Hinzufügen weiterer primitiver Datentypen (char, long, bool, float, etc.)}
+Prinzipiell dürfte das Hinzufügen weiterer primitiver Datentypen keine großen Probleme bereiten, jedoch müsste so gut wie jeder \textit{Node} angepasst werden, um mit dem neuen Datentyp umgehen zu können.
+\begin{itemize}
+\item{Schwierigkeit: Niedrig}
+\item{Aufwand: Mittel}
+\end{itemize}
+\subsubsection{Felder als Datentyp}
+Für die Implementierung von Feldern müsste auf jeden Fall die Symbol Tabelle überarbeitet werden. Ein einfacher Weg wäre hier zum Beispiel die Definition von 10 \textit{int}-Symbolen mit automatisch generierten Namen für ein \textit{int}-Feld der Größe 10. Wenn wir dann nur von einfachen Lese- und Schreiboperationen mithilfe des Index-Operators \textit{[]} auf die einzelnen Datenfelder ausgehen, würde sich der Aufwand bei den \textit{Nodes} hier wohl auf eine Anpassung des Lese-\textit{Nodes} von Variablen und dem Zuweisungs-\textit{Nodes} beschränken.
+\begin{itemize}
+\item{Schwierigkeit: Niedrig}
+\item{Aufwand: Niedrig}
+\end{itemize}
+\subsubsection{Zeiger als Datentyp}
+Da man Variablen bisher nur konstante Werte und keine Ausdrücke  oder andere Variablen zuweisen kann ist der Nutzen für Zeiger noch sehr begrenzt. Zur Lösung des Problems müssten die Werte der Variablendefinitionen auch als Ausdrücke ausgewertet werden. Um den Zugriff über die Adresse einer Variable zu erlauben, könnte die Symbol Tabelle wahrscheinlich relativ einfach angepasst werden.
+\begin{itemize}
+\item{Schwierigkeit: Mittel}
+\item{Aufwand: Hoch}
+\end{itemize}
+\subsubsection{Zeigerarithmetik}
+Zeigerarithmetik (Berechnung der Zeigeradresse inklusive Inkrement und Dekrement) benötigt eine Emulation des Speichers und somit grundlegende Änderungen an mehreren Basissystemen (zum Beispiel an der Symbol Tabelle).
+\begin{itemize}
+\item{Schwierigkeit: Hoch}
+\item{Aufwand: Hoch}
+\end{itemize}
+\subsubsection{Hinzufügen von Anweisungen (Verzweigungen, Schleifen)}
+?
+\begin{itemize}
+\item{Schwierigkeit: ?}
+\item{Aufwand: ?}
+\end{itemize}
+\subsubsection{Bearbeiten des Syntaxbaums...}
+Das Bearbeiten des Syntaxbaums im Frontend müsste mit der \href{https://d3js.org}{D3.js}-Bibliothek möglich sein, jedoch habe ich mich im Rahmen dieser Arbeit nicht weiter damit befasst.
+\begin{itemize}
+\item{Schwierigkeit: Nicht einschätzbar}
+\item{Aufwand: Nicht einschätzbar}
+\end{itemize}
+\subsubsection{...und Generieren des entstandenen \textit{C}-Ausdrucks}
+Das Generieren des \textit{C}-Ausdrucks aus einem Syntaxbaum besteht größtenteils nur aus Textkonkatenation der Namen der einzelnen Knoten. Bei einzelnen Knoten (zum Beispiel der ternäre Operator oder Funktionen mit Parametern) ist etwas mehr Aufwand von Nöten.
+\begin{itemize}
+\item{Schwierigkeit: Niedrig}
+\item{Aufwand: Niedrig}
+\end{itemize}
 
 \subsection{Übertragbarkeit der Ergebnisse}
 \label{sub:uebertragbarkeit}
