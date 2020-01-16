@@ -58,15 +58,13 @@ unary_expression
 : postfix_expression					{$$ = $1;}
 	| INC_OP unary_expression			{$$ = makeNode_1(&ast, createNode_IncrementPre, $2);}
 	| DEC_OP unary_expression			{$$ = makeNode_1(&ast, createNode_DecrementPre, $2);}
-	| unary_operator cast_expression	{$$ = makeNode_0(&ast, createNode);}
+	| unary_operator cast_expression	{$$ = makeNode_1_STRING(&ast, createNode_UnaryOp, $2, $1);}
 	| SIZEOF unary_expression			{$$ = makeNode_0(&ast, createNode);}
 	| SIZEOF '(' type_name ')'			{$$ = makeNode_0(&ast, createNode);} // ToDo
 	;
 
 unary_operator
-	: '&'		{strcpy($$, "&");}
-	| '*'		{strcpy($$, "*");}
-	| '+'		{strcpy($$, "+");}
+	: '+'		{strcpy($$, "+");}
 	| '-'		{strcpy($$, "-");}
 	| '~'		{strcpy($$, "~");}
 	| '!'		{strcpy($$, "!");}

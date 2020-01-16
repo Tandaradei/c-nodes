@@ -11,6 +11,7 @@
 #include "node_integer_ops.h"
 #include "node_shift_ops.h"
 #include "node_ternary.h"
+#include "node_unary_ops.h"
 #include "node_value.h"
 #include "node_variable.h"
 
