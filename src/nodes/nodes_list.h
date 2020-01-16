@@ -9,6 +9,7 @@
 #include "node_compare.h"
 #include "node_function.h"
 #include "node_integer_ops.h"
+#include "node_shift_ops.h"
 #include "node_ternary.h"
 #include "node_value.h"
 #include "node_variable.h"

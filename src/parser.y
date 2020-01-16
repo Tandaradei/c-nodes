@@ -92,8 +92,8 @@ additive_expression
 
 shift_expression
 	: additive_expression										{$$ = $1;}
-	| shift_expression LEFT_OP additive_expression				{$$ = makeNode_0(&ast, createNode);}
-	| shift_expression RIGHT_OP additive_expression				{$$ = makeNode_0(&ast, createNode);}
+	| shift_expression LEFT_OP additive_expression				{$$ = makeNode_2(&ast, createNode_ShiftLeft, $1, $3);}
+	| shift_expression RIGHT_OP additive_expression				{$$ = makeNode_2(&ast, createNode_ShiftRight, $1, $3);}
 	;
 
 relational_expression
