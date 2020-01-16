@@ -40,7 +40,6 @@ primary_expression
 	: IDENTIFIER			{Node* node = makeNode_0_STRING(&ast, createNode_GetSymbol, $1); node->additional_info = &sym_tab; $$ = node;}
 	| CONSTANT_INT 			{$$ = makeNode_0_INT(&ast, createNode_ValueInt, atoi($1));}
 	| CONSTANT_DOUBLE		{$$ = makeNode_0_DOUBLE(&ast, createNode_ValueDouble, atof($1));}
-	| STRING_LITERAL		{$$ = makeNode_0(&ast, createNode);}
 	| '(' expression ')'	{$$ = $2;}
 	;
 
@@ -59,8 +58,8 @@ unary_expression
 	| INC_OP unary_expression			{$$ = makeNode_1(&ast, createNode_IncrementPre, $2);}
 	| DEC_OP unary_expression			{$$ = makeNode_1(&ast, createNode_DecrementPre, $2);}
 	| unary_operator cast_expression	{$$ = makeNode_1_STRING(&ast, createNode_UnaryOp, $2, $1);}
-	| SIZEOF unary_expression			{$$ = makeNode_0(&ast, createNode);}
-	| SIZEOF '(' type_name ')'			{$$ = makeNode_0(&ast, createNode);} // ToDo
+	| SIZEOF unary_expression			{$$ = makeNode_1(&ast, createNode_Sizeof_Expression, $2);}
+	| SIZEOF '(' type_name ')'			{$$ = makeNode_0_STRING(&ast, createNode_Sizeof_Type, $3);} // ToDo
 	;
 
 unary_operator

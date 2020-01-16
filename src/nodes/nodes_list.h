@@ -10,6 +10,7 @@
 #include "node_function.h"
 #include "node_integer_ops.h"
 #include "node_shift_ops.h"
+#include "node_sizeof.h"
 #include "node_ternary.h"
 #include "node_unary_ops.h"
 #include "node_value.h"
