@@ -48,6 +48,88 @@ Node createNode_GetSymbol(const char* identifier) {
     return node;
 }
 
+#define NEW_VALUE_INT(OLD_VALUE, VALUE, OP) \
+    if(!strcmp(OP, "=")) { \
+    } \
+    else if(!strcmp(OP, "+=")) { \
+        VALUE = OLD_VALUE + VALUE; \
+    } \
+    else if(!strcmp(OP, "-=")) { \
+        VALUE = OLD_VALUE - VALUE; \
+    } \
+    else if(!strcmp(OP, "*=")) { \
+        VALUE = OLD_VALUE * VALUE; \
+    } \
+    else if(!strcmp(OP, "/=")) { \
+        VALUE = OLD_VALUE / VALUE; \
+    } \
+    else if(!strcmp(OP, "%=")) { \
+        VALUE = OLD_VALUE % VALUE; \
+    } \
+    else if(!strcmp(OP, "&=")) { \
+        VALUE = OLD_VALUE & VALUE; \
+    } \
+    else if(!strcmp(OP, "|=")) { \
+        VALUE = OLD_VALUE | VALUE; \
+    } \
+    else if(!strcmp(OP, "^=")) { \
+        VALUE = OLD_VALUE ^ VALUE; \
+    } \
+    else if(!strcmp(OP, "<<=")) { \
+        VALUE = OLD_VALUE << VALUE; \
+    } \
+    else if(!strcmp(OP, ">>=")) { \
+        VALUE = OLD_VALUE >> VALUE; \
+    } \
+    else { \
+        strcpy(node->error, "Unknown assignment operator"); \
+        return false; \
+    } \
+
+#define NEW_VALUE_DOUBLE(OLD_VALUE, VALUE, OP) \
+    if(!strcmp(OP, "=")) { \
+    } \
+    else if(!strcmp(OP, "+=")) { \
+        VALUE = OLD_VALUE + VALUE; \
+    } \
+    else if(!strcmp(OP, "-=")) { \
+        VALUE = OLD_VALUE - VALUE; \
+    } \
+    else if(!strcmp(OP, "*=")) { \
+        VALUE = OLD_VALUE * VALUE; \
+    } \
+    else if(!strcmp(OP, "/=")) { \
+        VALUE = OLD_VALUE / VALUE; \
+    } \
+    else if(!strcmp(OP, "%=")) { \
+        strcpy(node->error, "Can't use % operator on 'double'"); \
+        return false; \
+    } \
+    else if(!strcmp(OP, "&=")) { \
+        strcpy(node->error, "Can't use & operator on 'double'"); \
+        return false; \
+    } \
+    else if(!strcmp(OP, "|=")) { \
+        strcpy(node->error, "Can't use | operator on 'double'"); \
+        return false; \
+    } \
+    else if(!strcmp(OP, "^=")) { \
+        strcpy(node->error, "Can't use ^ operator on 'double'"); \
+        return false; \
+    } \
+    else if(!strcmp(OP, "<<=")) { \
+        strcpy(node->error, "Can't use << operator on 'double'"); \
+        return false; \
+    } \
+    else if(!strcmp(OP, ">>=")) { \
+        strcpy(node->error, "Can't use >> operator on 'double'"); \
+        return false; \
+    } \
+    else { \
+        strcpy(node->error, "Unknown assignment operator"); \
+        return false; \
+    } \
+
 bool processNode_Assign(Node* node, const PROCESS_MODE process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
@@ -67,12 +149,15 @@ bool processNode_Assign(Node* node, const PROCESS_MODE process_mode) {
     UpdateSymbolValue_Result result = USVR_SUCCESS;
     int i_value = getAsInt(node->in.slot_1.node);
     double d_value = getAsDouble(node->in.slot_1.node);
+    Value old_value = node->in.slot_0.node->out.value;
     switch(type) {
         case VT_INT:
+            NEW_VALUE_INT(old_value.i_value, i_value, node->text)
             result = updateSymbolValue_Int(sym_tab, handle, i_value);
             node->out.value.i_value = i_value;
             break;
         case VT_DOUBLE:
+            NEW_VALUE_DOUBLE(old_value.d_value, d_value, node->text)
             result = updateSymbolValue_Double(sym_tab, handle, d_value);
             node->out.value.d_value = d_value;
             break;
@@ -82,8 +167,8 @@ bool processNode_Assign(Node* node, const PROCESS_MODE process_mode) {
     return result == USVR_SUCCESS;
 }
 
-Node createNode_Assign(Node* node_target, Node* node_value) {
-    return (Node) {
+Node createNode_Assign(Node* node_target, Node* node_value, const char* operator) {
+    Node node = {
         .in = {
             .slot_0 = {
                 .node = node_target,
@@ -104,9 +189,10 @@ Node createNode_Assign(Node* node_target, Node* node_value) {
             .is_processed = false,
         },
         .processNode = processNode_Assign,
-        .text = "=",
         .error = "",
         .additional_info = NULL,
         .symbol_handle = 0,
     };
+    strcpy(node.text, operator);
+    return node;
 }

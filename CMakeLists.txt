@@ -68,13 +68,14 @@ add_executable(${PROJECT_NAME}
     src/symtab.c
     src/values.c
     src/nodes/node.c
-    src/nodes/node_value.c
-    src/nodes/node_integer_ops.c
-    src/nodes/node_variable.c
-    src/nodes/node_ternary.c
     src/nodes/node_bool_ops.c
     src/nodes/node_cast.c
+    src/nodes/node_comma_op.c
     src/nodes/node_function.c
+    src/nodes/node_integer_ops.c
+    src/nodes/node_ternary.c
+    src/nodes/node_value.c
+    src/nodes/node_variable.c
     src/__generated__/scanner.c
     src/__generated__/parser.c
 )
