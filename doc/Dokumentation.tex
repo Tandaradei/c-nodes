@@ -201,6 +201,15 @@ child { node[fill=green, label={6}] { * }
 \label{fig:example_syntax_tree}
 \end{figure}
 
+\subsection{Scanner}
+\label{sub:scanner}
+Ein Werkzeug, das den Eingabetext in Tokens umwandelt. Kann Fehler in der Zeichenabfolge innerhalb eines Tokens finden, aber nicht in der Abfolge mehrerer Tokens.
+
+
+\subsection{Parser}
+\label{sub:parser}
+Ein Werkzeug, das die vom Scanner generierte Tokenabfolge einliest und validiert. Kann für jede Tokenkombination eine Aktion auslösen, wie zum Beispiel das Hinzufügen eines Knoten im Syntaxbaum.
+
 %---
 \chapter{Problemanalyse}
 \label{cha:problemanalyse}
@@ -244,7 +253,7 @@ Das Backend-Interface besteht aus einer einzigen PHP-Datei, die im Grunde nichts
 
 \section{Backend}
 \label{sec:backend}
-Der Großteil der Arbeit ist in das, auch eigenständig als Kommandozeilenprogramm benutzbare, Backend geflossen. Dieses nimmt grundlegend einen Ausdruck und eine Reihe von Symboldefinitionen(die auch leer sein kann) entgegen und gibt den resultierenden Syntaxbaum in einem der Formate (JSON oder tex) auf der Standardausgabe aus. Alternativ kann die Ausgabe auch direkt in eine Datei geschrieben werden.
+Der Großteil der Arbeit ist in das, auch eigenständig als Kommandozeilenprogramm benutzbare, Backend geflossen. Dieses nimmt grundlegend einen Ausdruck und eine Reihe von Symboldefinitionen(die auch leer sein kann) entgegen und gibt den resultierenden Syntaxbaum in einem der Formate (JSON oder tex) auf der Standardausgabe aus. Alternativ kann die Ausgabe auch direkt in eine Datei geschrieben werden. Für die Generierung des \hyperref{sub:scanner}{Scanners} wurde hierbei Flex und für die Generierung des \hyperref{sub:parser}{Parsers} Bison verwendet.
 
 Bei Software-Projekten besteht dieses Kapitel typischerweise aus den 
 Phasen Implementierung \& Test im \ac{rup}.
