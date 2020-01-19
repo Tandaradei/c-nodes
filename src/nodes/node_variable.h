@@ -7,6 +7,6 @@ bool processNode_GetSymbol(Node* node, const PROCESS_MODE process_mode);
 Node createNode_GetSymbol(const char* identifier);
 
 bool processNode_Assign(Node* node, const PROCESS_MODE process_mode);
-Node createNode_Assign(Node* node_target, Node* node_value);
+Node createNode_Assign(Node* node_target, Node* node_value, const char* operator);
 
 #endif // NODE_VARIABLE_H

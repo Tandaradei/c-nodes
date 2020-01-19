@@ -22,6 +22,8 @@ IS			(u|U|l|L)*
 "double"		{ count(); return(DOUBLE); }
 "int"			{ count(); return(INT); }
 
+"sizeof"		{ count(); return(SIZEOF); }
+
 {L}({L}|{D})*		{ count(); strncpy(yylval.txt, yytext, 256); return(IDENTIFIER); }
 
 

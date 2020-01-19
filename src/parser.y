@@ -40,7 +40,6 @@ primary_expression
 	: IDENTIFIER			{Node* node = makeNode_0_STRING(&ast, createNode_GetSymbol, $1); node->additional_info = &sym_tab; $$ = node;}
 	| CONSTANT_INT 			{$$ = makeNode_0_INT(&ast, createNode_ValueInt, atoi($1));}
 	| CONSTANT_DOUBLE		{$$ = makeNode_0_DOUBLE(&ast, createNode_ValueDouble, atof($1));}
-	| STRING_LITERAL		{$$ = makeNode_0(&ast, createNode);}
 	| '(' expression ')'	{$$ = $2;}
 	;
 
@@ -50,30 +49,21 @@ postfix_expression
 	| IDENTIFIER '(' ')'													{$$ = makeNode_0_STRING(&ast, createNode_Function_0, $1);}
 	| IDENTIFIER '(' assignment_expression ')'								{$$ = makeNode_1_STRING(&ast, createNode_Function_1, $3, $1);}
 	| IDENTIFIER '(' assignment_expression ',' assignment_expression ')'	{$$ = makeNode_2_STRING(&ast, createNode_Function_2, $3, $5, $1);}
-	| postfix_expression '.' IDENTIFIER										{$$ = makeNode_0(&ast, createNode);} // ToDo
-	| postfix_expression PTR_OP IDENTIFIER									{$$ = makeNode_0(&ast, createNode);}
 	| postfix_expression INC_OP												{$$ = makeNode_1(&ast, createNode_IncrementPost, $1);}
 	| postfix_expression DEC_OP												{$$ = makeNode_1(&ast, createNode_DecrementPost, $1);}
-	;
-
-argument_expression_list
-	: assignment_expression
-	| assignment_expression ',' argument_expression_list
 	;
 
 unary_expression
 : postfix_expression					{$$ = $1;}
 	| INC_OP unary_expression			{$$ = makeNode_1(&ast, createNode_IncrementPre, $2);}
 	| DEC_OP unary_expression			{$$ = makeNode_1(&ast, createNode_DecrementPre, $2);}
-	| unary_operator cast_expression	{$$ = makeNode_0(&ast, createNode);}
-	| SIZEOF unary_expression			{$$ = makeNode_0(&ast, createNode);}
-	| SIZEOF '(' type_name ')'			{$$ = makeNode_0(&ast, createNode);} // ToDo
+	| unary_operator cast_expression	{$$ = makeNode_1_STRING(&ast, createNode_UnaryOp, $2, $1);}
+	| SIZEOF unary_expression			{$$ = makeNode_1(&ast, createNode_Sizeof_Expression, $2);}
+	| SIZEOF '(' type_name ')'			{$$ = makeNode_0_STRING(&ast, createNode_Sizeof_Type, $3);} // ToDo
 	;
 
 unary_operator
-	: '&'		{strcpy($$, "&");}
-	| '*'		{strcpy($$, "*");}
-	| '+'		{strcpy($$, "+");}
+	: '+'		{strcpy($$, "+");}
 	| '-'		{strcpy($$, "-");}
 	| '~'		{strcpy($$, "~");}
 	| '!'		{strcpy($$, "!");}
@@ -99,8 +89,8 @@ additive_expression
 
 shift_expression
 	: additive_expression										{$$ = $1;}
-	| shift_expression LEFT_OP additive_expression				{$$ = makeNode_0(&ast, createNode);}
-	| shift_expression RIGHT_OP additive_expression				{$$ = makeNode_0(&ast, createNode);}
+	| shift_expression LEFT_OP additive_expression				{$$ = makeNode_2(&ast, createNode_ShiftLeft, $1, $3);}
+	| shift_expression RIGHT_OP additive_expression				{$$ = makeNode_2(&ast, createNode_ShiftRight, $1, $3);}
 	;
 
 relational_expression
@@ -149,7 +139,7 @@ conditional_expression
 
 assignment_expression
 	: conditional_expression										{$$ = $1;}
-	| unary_expression assignment_operator assignment_expression 	{$$ = makeNode_2(&ast, createNode_Assign, $1, $3);}
+	| unary_expression assignment_operator assignment_expression 	{$$ = makeNode_2_STRING(&ast, createNode_Assign, $1, $3, $2);}
 	;
 
 assignment_operator
@@ -168,7 +158,7 @@ assignment_operator
 
 expression
 	: assignment_expression 				{$$ = $1;}
-	| expression ',' assignment_expression 	{$$ = makeNode_0(&ast, createNode);}
+	| expression ',' assignment_expression 	{$$ = makeNode_2(&ast, createNode_CommaOp, $1, $3);}
 	;
 
 type_name
