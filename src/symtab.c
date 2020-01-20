@@ -5,6 +5,10 @@
 
 #include "debug.h"
 
+void setCurrentConfig(SymbolTable* sym_tab, SymbolValue value) {
+    sym_tab->currentConfig = value;
+}
+
 AddSymbol_Result addSymbol(SymbolTable* sym_tab, const char* identifier, SymbolValue value) {
     if(sym_tab->symbol_count == MAX_SYMBOLS) {
         return ASR_TABLE_FULL;
@@ -17,6 +21,22 @@ AddSymbol_Result addSymbol(SymbolTable* sym_tab, const char* identifier, SymbolV
     uint8_t i = sym_tab->symbol_count++;
     strcpy(sym_tab->identifiers[i], identifier);
     sym_tab->values[i] = value;
+    return ASR_SUCCESS;
+}
+
+
+AddSymbol_Result addSymbolWithCurrentConfig(SymbolTable* sym_tab, const char* identifier) {
+    if(sym_tab->symbol_count == MAX_SYMBOLS) {
+        return ASR_TABLE_FULL;
+    }
+    for(uint8_t i = 0; i < sym_tab->symbol_count; i++) {
+        if(!strcmp(sym_tab->identifiers[i], identifier)) {
+            return ASR_ALREADY_DECLARED;
+        }
+    }
+    uint8_t i = sym_tab->symbol_count++;
+    strcpy(sym_tab->identifiers[i], identifier);
+    sym_tab->values[i] = sym_tab->currentConfig;
     return ASR_SUCCESS;
 }
 
@@ -40,6 +60,7 @@ SymbolValue getSymbolValue(const SymbolTable* sym_tab, const SymbolHandle handle
 }
 
 UpdateSymbolValue_Result updateSymbolValue_Int(SymbolTable* sym_tab, const SymbolHandle handle, const int value) {
+    if(handle.value == 0 || handle.value > sym_tab->symbol_count) { printf("handle.value: %d\n", handle.value); }
     assert(handle.value > 0 && handle.value <= sym_tab->symbol_count);
     const uint8_t i = handle.value - 1;
     if(sym_tab->values[i].type != VT_INT) {

@@ -20,9 +20,7 @@ bool processNode_GetSymbol(Node* node, const PROCESS_MODE process_mode) {
     node->out.type = sym_value.type;
     if(process_mode == PM_FULL) {
         node->out.is_lvalue = !sym_value.is_const; 
-        if(node->out.is_lvalue) {
-            node->symbol_handle = handle;
-        } 
+        node->symbol_handle = handle;
         node->out.value = sym_value.value;
     }
     return true;
@@ -164,7 +162,18 @@ bool processNode_Assign(Node* node, const PROCESS_MODE process_mode) {
         default:
             result = USVR_TYPE_MISMATCH;
     }
-    return result == USVR_SUCCESS;
+    switch(result) {
+        case USVR_SUCCESS:
+            return true;
+            break;
+        case USVR_IS_CONST:
+            strcpy(node->error, "Cannot assign a value to a constant");
+            return false;
+            break;
+        default: // Other errors should've already been checked at 'compile time'
+            return false;
+            break;
+    }
 }
 
 Node createNode_Assign(Node* node_target, Node* node_value, const char* operator) {

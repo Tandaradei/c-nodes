@@ -7,9 +7,12 @@
 	#include "src/symtab.h"
 	#include "src/nodes/nodes_list.h"
 
+	#define MAX_ROOT_NODES 64
+
 	AbstractSyntaxTree ast;
 	SymbolTable sym_tab;
-	Node* root_node;
+	Node* root_nodes[MAX_ROOT_NODES];
+	unsigned int node_count;
 
 int yylex();
 void yyerror(char *);
@@ -34,8 +37,10 @@ void yyerror(char *);
 %type<node> postfix_expression
 %type<txt> assignment_operator type_name unary_operator
 %%
-start	: expression {root_node = $1;}
-		;
+start	
+	: statement_list
+	;
+
 primary_expression
 	: IDENTIFIER			{Node* node = makeNode_0_STRING(&ast, createNode_GetSymbol, $1); node->additional_info = &sym_tab; $$ = node;}
 	| CONSTANT_INT 			{$$ = makeNode_0_INT(&ast, createNode_ValueInt, atoi($1));}
@@ -165,6 +170,42 @@ type_name
 	: INT					{strcpy($$, "int");}
 	| DOUBLE				{strcpy($$, "double");}
 	;
+
+declaration
+	: declaration_specifiers init_declarator_list 
+	;
+
+declaration_specifiers
+	: type_name										{ setCurrentConfig(&sym_tab, (SymbolValue){ getValueTypeForString($1), 0, false}); }
+	| CONST type_name								{ setCurrentConfig(&sym_tab, (SymbolValue){ getValueTypeForString($2), 0, true}); }
+	;
+
+init_declarator_list
+	: init_declarator
+	| init_declarator_list ',' init_declarator
+	;
+
+init_declarator
+	: declarator
+	;
+
+declarator
+	: direct_declarator
+	;
+
+direct_declarator
+	: IDENTIFIER									{ addSymbolWithCurrentConfig(&sym_tab, $1);}
+	;
+
+statement
+	: expression ';'	{ root_nodes[node_count++] = $1; }
+	| declaration ';'
+	;
+
+statement_list
+	: statement
+	| statement_list statement
+	;
 %%
 #include <stdio.h>
 
@@ -252,33 +293,49 @@ int main(unsigned int argc, char** argv) {
 	yy_scan_string(args.expr.value.as_string);
 	int rc = yyparse();
 	if (rc == 0) {
-		if(findNodeValueType(root_node)) {
-			processNode(root_node);
+		for(unsigned int i = 0; i < node_count; i++) {
+			if(findNodeValueType(root_nodes[i])) {
+				processNode(root_nodes[i]);
+			}
 		}
-
 		if(args.tex.is_set) {
-			//printf("<Tex>\n");
-			printTex(NULL, root_node);
-			//printf("</Tex>\n");
-		}
-		if(args.json.is_set) {
-			//printf("<D3>\n");
-			printNodeRecursively_Json(NULL, root_node, 0);
-			//printf("</D3>\n");
+			for(unsigned int i = 0; i < node_count; i++) {
+				printTex(NULL, root_nodes[i]);
+			}
 		}
 		
+		if(args.json.is_set) {
+			printf("{ \"trees\": [\n");
+			if(node_count > 0) {
+				for(unsigned int i = 0; i < node_count; i++) {
+					if(i > 0) {
+						printf(",\n");
+					}
+					printNodeRecursively_Json(NULL, root_nodes[i], 1);
+				}
+			}
+			else {
+				printf("{\"name\": \"No expression found\", \"type\": \"ERROR\", \"error\": \"\"}\n");
+			}
+			printf("]}\n");
+		}
 		FILE* file = NULL;
 		if(args.tex_file.is_set) {
-			file = fopen(args.tex_file.value.as_string, "w");
-			printTex(file, root_node);
-			fclose(file);
-			file = NULL;
+			for(unsigned int i = 0; i < node_count; i++) {	
+				file = fopen(args.tex_file.value.as_string, "w");
+				printTex(file, root_nodes[i]);
+				fclose(file);
+				file = NULL;
+			}
 		}
+		
 		if(args.json_file.is_set) {
-			file = fopen(args.json_file.value.as_string, "w");
-			printNodeRecursively_Json(file, root_node, 0);
-			fclose(file);
-			file = NULL;
+			for(unsigned int i = 0; i < node_count; i++) {
+				file = fopen(args.json_file.value.as_string, "w");
+				printNodeRecursively_Json(file, root_nodes[i], 0);
+				fclose(file);
+				file = NULL;
+			}
 		}
 	}
 	else {
@@ -286,7 +343,7 @@ int main(unsigned int argc, char** argv) {
 			char* expr = args.expr.value.as_string;
 			int col = column - 1;
 			const int window_size = 5;
-			printf("{\"name\": \"parse error on column %d\", \"type\": \"ERROR\", \"error\": \"%s%.*s    %c    %.*s%s\"}", 
+			printf("{\"name\": \"parse error on column %d\", \"type\": \"ERROR\", \"error\": \"%s%.*s    %c    %.*s%s\"}\n", 
 				col + 1, 
 				col > window_size ? "..." : "",
 				col > window_size ? window_size : col, col > window_size ? expr + (col - window_size) : expr,
