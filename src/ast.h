@@ -21,5 +21,6 @@ Node* makeNode_0_DOUBLE(AbstractSyntaxTree* ast, Node (*createNode)(const double
 Node* makeNode_0_STRING(AbstractSyntaxTree* ast, Node (*createNode)(const char* value), const char* value);
 Node* makeNode_1_STRING(AbstractSyntaxTree* ast, Node (*createNode)(Node* node_0, const char* value), Node* node_0, const char* value);
 Node* makeNode_2_STRING(AbstractSyntaxTree* ast, Node (*createNode)(Node* node_0, Node* node_1, const char* value), Node* node_0, Node* node_1, const char* value);
+Node* makeNode_0_SymbolValue(AbstractSyntaxTree* ast, Node (*createNode)(SymbolValue value), SymbolValue value);
 
 #endif // AST_H

@@ -24,6 +24,7 @@ typedef struct SymbolTable {
     char identifiers[MAX_SYMBOL_LENGTH][MAX_SYMBOLS];
     SymbolValue values[MAX_SYMBOLS];
     uint8_t symbol_count;
+    SymbolValue currentConfig;
 } SymbolTable;
 
 typedef enum AddSymbol_Result {
@@ -32,7 +33,11 @@ typedef enum AddSymbol_Result {
     ASR_TABLE_FULL
 } AddSymbol_Result;
 
+void setCurrentConfig(SymbolTable* sym_tab, SymbolValue value);
+
 AddSymbol_Result addSymbol(SymbolTable* sym_tab, const char* identifier, SymbolValue value);
+AddSymbol_Result addSymbolWithCurrentConfig(SymbolTable* sym_tab, const char* identifier);
+bool initializeSymbol(SymbolTable* sym_tab, SymbolHandle handle, Value value, ValueType type);
 
 SymbolHandle    getSymbolHandle(const SymbolTable* sym_tab, const char* identifier);
 SymbolValue     getSymbolValue(const SymbolTable* sym_tab, const SymbolHandle handle);

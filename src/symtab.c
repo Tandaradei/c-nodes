@@ -5,6 +5,10 @@
 
 #include "debug.h"
 
+void setCurrentConfig(SymbolTable* sym_tab, SymbolValue value) {
+    sym_tab->currentConfig = value;
+}
+
 AddSymbol_Result addSymbol(SymbolTable* sym_tab, const char* identifier, SymbolValue value) {
     if(sym_tab->symbol_count == MAX_SYMBOLS) {
         return ASR_TABLE_FULL;
@@ -18,6 +22,61 @@ AddSymbol_Result addSymbol(SymbolTable* sym_tab, const char* identifier, SymbolV
     strcpy(sym_tab->identifiers[i], identifier);
     sym_tab->values[i] = value;
     return ASR_SUCCESS;
+}
+
+
+AddSymbol_Result addSymbolWithCurrentConfig(SymbolTable* sym_tab, const char* identifier) {
+    if(sym_tab->symbol_count == MAX_SYMBOLS) {
+        return ASR_TABLE_FULL;
+    }
+    for(uint8_t i = 0; i < sym_tab->symbol_count; i++) {
+        if(!strcmp(sym_tab->identifiers[i], identifier)) {
+            return ASR_ALREADY_DECLARED;
+        }
+    }
+    uint8_t i = sym_tab->symbol_count++;
+    strcpy(sym_tab->identifiers[i], identifier);
+    sym_tab->values[i] = sym_tab->currentConfig;
+    return ASR_SUCCESS;
+}
+
+bool initializeSymbol(SymbolTable* sym_tab, SymbolHandle handle, Value value, ValueType type) {
+    if(handle.value == 0) {
+        return false;
+    }
+    int i = handle.value - 1;
+    SymbolValue sym_value = getSymbolValue(sym_tab, handle);
+    switch (sym_value.type) {
+        case VT_INT:
+            switch (type) {
+                case VT_INT:
+                    sym_tab->values[i].value.i_value = value.i_value;
+                    break;
+                case VT_DOUBLE:
+                    sym_tab->values[i].value.i_value = (int)value.d_value;
+                    break;
+                default:
+                    sym_tab->values[i].value.i_value = 0;
+                    break;
+            }
+            break;
+        case VT_DOUBLE:
+            switch (type) {
+                case VT_INT:
+                    sym_tab->values[i].value.d_value = (double)value.i_value;
+                    break;
+                case VT_DOUBLE:
+                    sym_tab->values[i].value.d_value = value.d_value;
+                    break;
+                default:
+                    sym_tab->values[i].value.d_value = 0.0;
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+    return true;
 }
 
 SymbolHandle getSymbolHandle(const SymbolTable* sym_tab, const char* identifier) {
@@ -40,6 +99,7 @@ SymbolValue getSymbolValue(const SymbolTable* sym_tab, const SymbolHandle handle
 }
 
 UpdateSymbolValue_Result updateSymbolValue_Int(SymbolTable* sym_tab, const SymbolHandle handle, const int value) {
+    if(handle.value == 0 || handle.value > sym_tab->symbol_count) { printf("handle.value: %d\n", handle.value); }
     assert(handle.value > 0 && handle.value <= sym_tab->symbol_count);
     const uint8_t i = handle.value - 1;
     if(sym_tab->values[i].type != VT_INT) {

@@ -16,23 +16,35 @@ bool processNode_IncrementPre(Node* node, const PROCESS_MODE process_mode) {
         return false;
     }
     Value new_value;
+    UpdateSymbolValue_Result result = USVR_SUCCESS;
     switch(node->in.slot_0.node->out.type) {
         case VT_INT: 
             new_value.i_value = getAsInt(node->in.slot_0.node) + 1;
-            updateSymbolValue_Int(sym_tab, handle, new_value.i_value);
+            result = updateSymbolValue_Int(sym_tab, handle, new_value.i_value);
             node->out.value = new_value;
             break;
         case VT_DOUBLE: 
             new_value.d_value = getAsDouble(node->in.slot_0.node) + 1.0 ;
-            updateSymbolValue_Double(sym_tab, handle, new_value.d_value);
+            result = updateSymbolValue_Double(sym_tab, handle, new_value.d_value);
             node->out.value = new_value;
             break;
         default:
             break;
     }
-    node->symbol_handle = handle;
-    node->additional_info = node->in.slot_0.node->additional_info;
-    return true;
+    switch(result) {
+        case USVR_SUCCESS:
+            node->symbol_handle = handle;
+            node->additional_info = node->in.slot_0.node->additional_info;
+            return true;
+            break;
+        case USVR_IS_CONST:
+            strcpy(node->error, "Cannot modify a constant");
+            return false;
+            break;
+        default: // Other errors should've already been checked at 'compile time'
+            return false;
+            break;
+    }
 }
 
 Node createNode_IncrementPre(Node* node_0) {
@@ -74,23 +86,35 @@ bool processNode_IncrementPost(Node* node, const PROCESS_MODE process_mode) {
         return false;
     }
     Value value;
+    UpdateSymbolValue_Result result = USVR_SUCCESS;
     switch(node->in.slot_0.node->out.type) {
         case VT_INT: 
             value.i_value = getAsInt(node->in.slot_0.node);
             node->out.value = value;
-            updateSymbolValue_Int(sym_tab, handle, value.i_value + 1);
+            result = updateSymbolValue_Int(sym_tab, handle, value.i_value + 1);
             break;
         case VT_DOUBLE: 
             value.d_value = getAsDouble(node->in.slot_0.node);
             node->out.value = value;
-            updateSymbolValue_Double(sym_tab, handle, value.d_value + 1.0);
+            result = updateSymbolValue_Double(sym_tab, handle, value.d_value + 1.0);
             break;
         default:
             break;
     }
-    node->symbol_handle = handle;
-    node->additional_info = node->in.slot_0.node->additional_info;
-    return true;
+    switch(result) {
+        case USVR_SUCCESS:
+            node->symbol_handle = handle;
+            node->additional_info = node->in.slot_0.node->additional_info;
+            return true;
+            break;
+        case USVR_IS_CONST:
+            strcpy(node->error, "Cannot modify a constant");
+            return false;
+            break;
+        default: // Other errors should've already been checked at 'compile time'
+            return false;
+            break;
+    }
 }
 
 Node createNode_IncrementPost(Node* node_0) {
@@ -132,23 +156,35 @@ bool processNode_DecrementPre(Node* node, const PROCESS_MODE process_mode) {
         return false;
     }
     Value new_value;
+    UpdateSymbolValue_Result result = USVR_SUCCESS;
     switch(node->in.slot_0.node->out.type) {
         case VT_INT: 
             new_value.i_value = getAsInt(node->in.slot_0.node) - 1;
-            updateSymbolValue_Int(sym_tab, handle, new_value.i_value);
+            result = updateSymbolValue_Int(sym_tab, handle, new_value.i_value);
             node->out.value = new_value;
             break;
         case VT_DOUBLE: 
             new_value.d_value = getAsDouble(node->in.slot_0.node) - 1.0;
-            updateSymbolValue_Double(sym_tab, handle, new_value.d_value);
+            result = updateSymbolValue_Double(sym_tab, handle, new_value.d_value);
             node->out.value = new_value;
             break;
         default:
             break;
     }
-    node->symbol_handle = handle;
-    node->additional_info = node->in.slot_0.node->additional_info;
-    return true;
+    switch(result) {
+        case USVR_SUCCESS:
+            node->symbol_handle = handle;
+            node->additional_info = node->in.slot_0.node->additional_info;
+            return true;
+            break;
+        case USVR_IS_CONST:
+            strcpy(node->error, "Cannot modify a constant");
+            return false;
+            break;
+        default: // Other errors should've already been checked at 'compile time'
+            return false;
+            break;
+    }
 }
 
 Node createNode_DecrementPre(Node* node_0) {
@@ -190,23 +226,35 @@ bool processNode_DecrementPost(Node* node, const PROCESS_MODE process_mode) {
         return false;
     }
     Value value;
+    UpdateSymbolValue_Result result = USVR_SUCCESS;
     switch(node->in.slot_0.node->out.type) {
         case VT_INT: 
             value.i_value = getAsInt(node->in.slot_0.node);
             node->out.value = value;
-            updateSymbolValue_Int(sym_tab, handle, value.i_value - 1);
+            result = updateSymbolValue_Int(sym_tab, handle, value.i_value - 1);
             break;
         case VT_DOUBLE: 
             value.d_value = getAsDouble(node->in.slot_0.node);
             node->out.value = value;
-            updateSymbolValue_Double(sym_tab, handle, value.d_value - 1.0);
+            result = updateSymbolValue_Double(sym_tab, handle, value.d_value - 1.0);
             break;
         default:
             break;
     }
-    node->symbol_handle = handle;
-    node->additional_info = node->in.slot_0.node->additional_info;
-    return true;
+    switch(result) {
+        case USVR_SUCCESS:
+            node->symbol_handle = handle;
+            node->additional_info = node->in.slot_0.node->additional_info;
+            return true;
+            break;
+        case USVR_IS_CONST:
+            strcpy(node->error, "Cannot modify a constant");
+            return false;
+            break;
+        default: // Other errors should've already been checked at 'compile time'
+            return false;
+            break;
+    }
 }
 
 Node createNode_DecrementPost(Node* node_0) {

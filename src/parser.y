@@ -7,9 +7,15 @@
 	#include "src/symtab.h"
 	#include "src/nodes/nodes_list.h"
 
+	#define MAX_ROOT_NODES 64
+	#define MAX_PRINT_NODES 64
+
 	AbstractSyntaxTree ast;
 	SymbolTable sym_tab;
-	Node* root_node;
+	Node* root_nodes[MAX_ROOT_NODES];
+	unsigned int root_node_count = 0;
+	Node* print_nodes[MAX_PRINT_NODES];
+	unsigned int print_node_count = 0;
 
 int yylex();
 void yyerror(char *);
@@ -32,12 +38,18 @@ void yyerror(char *);
 %type<node> and_expression equality_expression relational_expression shift_expression
 %type<node> additive_expression multiplicative_expression cast_expression
 %type<node> postfix_expression
+%type<node>	declaration declaration_specifiers init_declarator_list init_declarator
 %type<txt> assignment_operator type_name unary_operator
 %%
-start	: expression {root_node = $1;}
-		;
+start	
+	: statement_list
+	;
+
 primary_expression
-	: IDENTIFIER			{Node* node = makeNode_0_STRING(&ast, createNode_GetSymbol, $1); node->additional_info = &sym_tab; $$ = node;}
+	: IDENTIFIER			{	Node* node = makeNode_0_STRING(&ast, createNode_GetSymbol, $1); 
+								node->additional_info = &sym_tab; 
+								$$ = node;
+							}
 	| CONSTANT_INT 			{$$ = makeNode_0_INT(&ast, createNode_ValueInt, atoi($1));}
 	| CONSTANT_DOUBLE		{$$ = makeNode_0_DOUBLE(&ast, createNode_ValueDouble, atof($1));}
 	| '(' expression ')'	{$$ = $2;}
@@ -165,6 +177,51 @@ type_name
 	: INT					{strcpy($$, "int");}
 	| DOUBLE				{strcpy($$, "double");}
 	;
+
+declaration
+	: declaration_specifiers init_declarator_list 	{ $$ = makeNode_2(&ast, createNode_Declaration, $1, $2); }
+	;
+
+declaration_specifiers
+	: type_name										{	Node* node = makeNode_0_SymbolValue(&ast, createNode_SetSymbolConfig, (SymbolValue){ getValueTypeForString($1), 0, false});
+														node->additional_info = &sym_tab;
+														$$ = node;
+													}
+	| CONST type_name								{	Node* node = makeNode_0_SymbolValue(&ast, createNode_SetSymbolConfig, (SymbolValue){ getValueTypeForString($2), 0, true});
+														node->additional_info = &sym_tab;
+														$$ = node;
+													}
+	;
+
+init_declarator_list
+	: init_declarator								{ $$ = $1; }
+	| init_declarator_list ',' init_declarator		{ $$ = makeNode_2(&ast, createNode_SymbolDeclarationList, $1, $3); }
+	;
+
+init_declarator
+	: IDENTIFIER									{	Node* node = makeNode_0_STRING(&ast, createNode_AddSymbol_Uninitialized, $1);
+														node->additional_info = &sym_tab;
+														$$ = node;
+													}
+	| IDENTIFIER '=' assignment_expression 			{ 	Node* expr = $3; 
+													  	print_nodes[print_node_count++] = expr; 
+													  	Node* node = makeNode_1_STRING(&ast, createNode_AddSymbol_Initialized, expr, $1);
+													  	node->additional_info = &sym_tab;
+														$$ = node;
+													}
+	;
+
+statement
+	: expression ';'	{ 	Node* expr = $1;
+							root_nodes[root_node_count++] = expr;
+							print_nodes[print_node_count++] = expr; }
+	| declaration ';'	{ root_nodes[root_node_count++] = $1; }
+	;
+
+statement_list
+	: statement
+	| statement_list statement
+	;
 %%
 #include <stdio.h>
 
@@ -252,33 +309,49 @@ int main(unsigned int argc, char** argv) {
 	yy_scan_string(args.expr.value.as_string);
 	int rc = yyparse();
 	if (rc == 0) {
-		if(findNodeValueType(root_node)) {
-			processNode(root_node);
+		for(unsigned int i = 0; i < root_node_count; i++) {
+			if(findNodeValueType(root_nodes[i])) {
+				processNode(root_nodes[i]);
+			}
 		}
-
 		if(args.tex.is_set) {
-			//printf("<Tex>\n");
-			printTex(NULL, root_node);
-			//printf("</Tex>\n");
-		}
-		if(args.json.is_set) {
-			//printf("<D3>\n");
-			printNodeRecursively_Json(NULL, root_node, 0);
-			//printf("</D3>\n");
+			for(unsigned int i = 0; i < print_node_count; i++) {
+				printTex(NULL, print_nodes[i]);
+			}
 		}
 		
+		if(args.json.is_set) {
+			printf("{ \"trees\": [\n");
+			if(print_node_count > 0) {
+				for(unsigned int i = 0; i < print_node_count; i++) {
+					if(i > 0) {
+						printf(",\n");
+					}
+					printNodeRecursively_Json(NULL, print_nodes[i], 1);
+				}
+			}
+			else {
+				printf("{\"name\": \"No expression found\", \"type\": \"ERROR\", \"error\": \"\"}\n");
+			}
+			printf("]}\n");
+		}
 		FILE* file = NULL;
 		if(args.tex_file.is_set) {
-			file = fopen(args.tex_file.value.as_string, "w");
-			printTex(file, root_node);
-			fclose(file);
-			file = NULL;
+			for(unsigned int i = 0; i < print_node_count; i++) {	
+				file = fopen(args.tex_file.value.as_string, "w");
+				printTex(file, print_nodes[i]);
+				fclose(file);
+				file = NULL;
+			}
 		}
+		
 		if(args.json_file.is_set) {
-			file = fopen(args.json_file.value.as_string, "w");
-			printNodeRecursively_Json(file, root_node, 0);
-			fclose(file);
-			file = NULL;
+			for(unsigned int i = 0; i < print_node_count; i++) {
+				file = fopen(args.json_file.value.as_string, "w");
+				printNodeRecursively_Json(file, print_nodes[i], 0);
+				fclose(file);
+				file = NULL;
+			}
 		}
 	}
 	else {
@@ -286,7 +359,7 @@ int main(unsigned int argc, char** argv) {
 			char* expr = args.expr.value.as_string;
 			int col = column - 1;
 			const int window_size = 5;
-			printf("{\"name\": \"parse error on column %d\", \"type\": \"ERROR\", \"error\": \"%s%.*s    %c    %.*s%s\"}", 
+			printf("{ trees : [\n{\"name\": \"parse error on column %d\", \"type\": \"ERROR\", \"error\": \"%s%.*s    %c    %.*s%s\"}\n]\n}\n", 
 				col + 1, 
 				col > window_size ? "..." : "",
 				col > window_size ? window_size : col, col > window_size ? expr + (col - window_size) : expr,
