@@ -359,11 +359,11 @@ int main(unsigned int argc, char** argv) {
 			char* expr = args.expr.value.as_string;
 			int col = column - 1;
 			const int window_size = 5;
-			printf("{ trees : [\n{\"name\": \"parse error on column %d\", \"type\": \"ERROR\", \"error\": \"%s%.*s    %c    %.*s%s\"}\n]\n}\n", 
+			printf("{ \"trees\" : [\n{\"name\": \"parse error on column %d\", \"type\": \"ERROR\", \"error\": \"%s%.*s    %c    %.*s%s\"}\n]\n}\n", 
 				col + 1, 
 				col > window_size ? "..." : "",
 				col > window_size ? window_size : col, col > window_size ? expr + (col - window_size) : expr,
-				expr[col],
+				strlen(expr) > 0 ? expr[col] : ' ',
 				window_size, expr + (col + 1),
 				col + window_size < strlen(expr) ? "..." : ""
 			);
