@@ -40,6 +40,45 @@ AddSymbol_Result addSymbolWithCurrentConfig(SymbolTable* sym_tab, const char* id
     return ASR_SUCCESS;
 }
 
+bool initializeSymbol(SymbolTable* sym_tab, SymbolHandle handle, Value value, ValueType type) {
+    if(handle.value == 0) {
+        return false;
+    }
+    int i = handle.value - 1;
+    SymbolValue sym_value = getSymbolValue(sym_tab, handle);
+    switch (sym_value.type) {
+        case VT_INT:
+            switch (type) {
+                case VT_INT:
+                    sym_tab->values[i].value.i_value = value.i_value;
+                    break;
+                case VT_DOUBLE:
+                    sym_tab->values[i].value.i_value = (int)value.d_value;
+                    break;
+                default:
+                    sym_tab->values[i].value.i_value = 0;
+                    break;
+            }
+            break;
+        case VT_DOUBLE:
+            switch (type) {
+                case VT_INT:
+                    sym_tab->values[i].value.d_value = (double)value.i_value;
+                    break;
+                case VT_DOUBLE:
+                    sym_tab->values[i].value.d_value = value.d_value;
+                    break;
+                default:
+                    sym_tab->values[i].value.d_value = 0.0;
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+    return true;
+}
+
 SymbolHandle getSymbolHandle(const SymbolTable* sym_tab, const char* identifier) {
     for(uint8_t i = 0; i < sym_tab->symbol_count; i++) {
         if(!strcmp(sym_tab->identifiers[i], identifier)) {

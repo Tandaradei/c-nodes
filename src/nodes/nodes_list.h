@@ -7,6 +7,7 @@
 #include "node_cast.h"
 #include "node_comma_op.h"
 #include "node_compare.h"
+#include "node_declaration.h"
 #include "node_function.h"
 #include "node_integer_ops.h"
 #include "node_shift_ops.h"

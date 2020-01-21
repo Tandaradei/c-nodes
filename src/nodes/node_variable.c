@@ -205,3 +205,119 @@ Node createNode_Assign(Node* node_target, Node* node_value, const char* operator
     strcpy(node.text, operator);
     return node;
 }
+
+bool processNode_SetSymbolConfig(Node* node, const PROCESS_MODE process_mode) {
+    if(process_mode == PM_FULL) {
+        return true;
+    }
+    SymbolTable* sym_tab = (SymbolTable*) node->additional_info;
+    if(!sym_tab) {
+        strcpy(node->error, "DEBUG: No reference to symbol table");
+        return false;
+    }
+    sym_tab->currentConfig = (SymbolValue) {
+        .type = node->out.type,
+        .value.i_value = 0,
+        .is_const = node->out.value.i_value
+    };
+    return true;
+}
+
+Node createNode_SetSymbolConfig(SymbolValue value) {
+    return (Node) {
+        .in = {
+            .slot_count = 0,
+        }, 
+        .out = {
+            .type = value.type,
+            .value.i_value = value.is_const,
+            .is_lvalue = false,
+            .is_processed = false,
+        },
+        .processNode = processNode_SetSymbolConfig,
+        .text = "Symbol config",
+        .error = "",
+        .additional_info = NULL,
+        .symbol_handle = 0,
+    };
+}
+
+bool processNode_AddSymbol_Uninitialized(Node* node, const PROCESS_MODE process_mode) {
+    if(process_mode == PM_FULL) {
+        return true;
+    }
+    SymbolTable* sym_tab = (SymbolTable*) node->additional_info;
+    if(!sym_tab) {
+        strcpy(node->error, "DEBUG: No reference to symbol table");
+        return false;
+    }
+    addSymbolWithCurrentConfig(sym_tab, node->text);
+    node->out.type = sym_tab->currentConfig.type;
+    return true;
+}
+
+Node createNode_AddSymbol_Uninitialized(const char* identifier) {
+    Node node = {
+        .in = {
+            .slot_count = 0,
+        }, 
+        .out = {
+            .type = VT_ERROR,
+            .value.i_value = 0,
+            .is_lvalue = false,
+            .is_processed = false,
+        },
+        .processNode = processNode_AddSymbol_Uninitialized,
+        .error = "",
+        .additional_info = NULL,
+        .symbol_handle = 0,
+    };
+    strcpy(node.text, identifier);
+    return node;
+}
+
+bool processNode_AddSymbol_Initialized(Node* node, const PROCESS_MODE process_mode) {
+    bool all_ins_valid = processAllNodeInSlots(node, process_mode);
+    if(!all_ins_valid) {
+        return false;
+    }
+    SymbolTable* sym_tab = (SymbolTable*) node->additional_info;
+    if(!sym_tab) {
+        strcpy(node->error, "DEBUG: No reference to symbol table");
+        return false;
+    }
+    if(process_mode == PM_TYPE_ONLY) {
+        addSymbolWithCurrentConfig(sym_tab, node->text);
+        node->out.type = sym_tab->currentConfig.type;
+        node->symbol_handle = getSymbolHandle(sym_tab, node->text);
+    }
+    else if(process_mode == PM_FULL) {
+        return initializeSymbol(sym_tab, node->symbol_handle, node->in.slot_0.node->out.value, node->in.slot_0.node->out.type);
+    }
+    return true;
+}
+
+Node createNode_AddSymbol_Initialized(Node* value, const char* identifier) {
+    Node node = {
+        .in = {
+            .slot_0 = {
+                .node = value,
+                .allowed_value_types = VT_INT | VT_DOUBLE,
+                .allow_rvalues = true,
+            },
+            .slot_count = 1,
+        }, 
+        .out = {
+            .type = VT_ERROR,
+            .value.i_value = 0,
+            .is_lvalue = false,
+            .is_processed = false,
+        },
+        .processNode = processNode_AddSymbol_Initialized,
+        .error = "",
+        .additional_info = NULL,
+        .symbol_handle = 0,
+    };
+    strcpy(node.text, identifier);
+    return node;
+}

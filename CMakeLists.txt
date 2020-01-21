@@ -71,6 +71,7 @@ add_executable(${PROJECT_NAME}
     src/nodes/node_bool_ops.c
     src/nodes/node_cast.c
     src/nodes/node_comma_op.c
+    src/nodes/node_declaration.c
     src/nodes/node_function.c
     src/nodes/node_integer_ops.c
     src/nodes/node_shift_ops.c

@@ -37,6 +37,7 @@ void setCurrentConfig(SymbolTable* sym_tab, SymbolValue value);
 
 AddSymbol_Result addSymbol(SymbolTable* sym_tab, const char* identifier, SymbolValue value);
 AddSymbol_Result addSymbolWithCurrentConfig(SymbolTable* sym_tab, const char* identifier);
+bool initializeSymbol(SymbolTable* sym_tab, SymbolHandle handle, Value value, ValueType type);
 
 SymbolHandle    getSymbolHandle(const SymbolTable* sym_tab, const char* identifier);
 SymbolValue     getSymbolValue(const SymbolTable* sym_tab, const SymbolHandle handle);
