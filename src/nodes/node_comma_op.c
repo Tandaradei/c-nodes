@@ -1,6 +1,6 @@
 #include "node_comma_op.h"
 
-bool processNode_CommaOp(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_CommaOp(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;

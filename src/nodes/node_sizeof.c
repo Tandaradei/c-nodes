@@ -1,6 +1,6 @@
 #include "node_sizeof.h"
 
-bool processNode_Sizeof_Type(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_Sizeof_Type(Node* node, const ProcessMode process_mode) {
     node->out.type = VT_INT;
     if(!strcmp(node->text, "sizeof(int)")) {
         node->out.value.i_value = sizeof(int);
@@ -35,7 +35,7 @@ Node createNode_Sizeof_Type(const char* typename) {
     return node;
 }
 
-bool processNode_Sizeof_Expression(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_Sizeof_Expression(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, PM_TYPE_ONLY); // 'sizeof expr' never evaluates the expression, just the type
     if(!all_ins_valid) {
         return false;

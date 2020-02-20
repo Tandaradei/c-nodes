@@ -3,7 +3,7 @@
 
 #include "node.h"
 
-bool processNode_UnaryOp(Node* node, const PROCESS_MODE process_mode);
+bool processNode_UnaryOp(Node* node, const ProcessMode process_mode);
 Node createNode_UnaryOp(Node* node, const char* operator);
 
 #endif // NODE_UNARY_OPS_H

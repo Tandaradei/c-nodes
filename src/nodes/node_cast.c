@@ -1,6 +1,6 @@
 #include "node_cast.h"
 
-bool processNode_Cast(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_Cast(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;

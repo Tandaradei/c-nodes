@@ -1,6 +1,6 @@
 #include "node_integer_ops.h"
 
-bool processNode_IncrementPre(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_IncrementPre(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;
@@ -70,7 +70,7 @@ Node createNode_IncrementPre(Node* node_0) {
     };
 }
 
-bool processNode_IncrementPost(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_IncrementPost(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;
@@ -140,7 +140,7 @@ Node createNode_IncrementPost(Node* node_0) {
     };
 }
 
-bool processNode_DecrementPre(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_DecrementPre(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;
@@ -210,7 +210,7 @@ Node createNode_DecrementPre(Node* node_0) {
     };
 }
 
-bool processNode_DecrementPost(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_DecrementPost(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;

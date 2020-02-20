@@ -5,7 +5,7 @@
 
 #include "src/symtab.h"
 
-bool processNode_GetSymbol(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_GetSymbol(Node* node, const ProcessMode process_mode) {
     SymbolTable* sym_tab = (SymbolTable*) node->additional_info;
     if(!sym_tab) {
         strcpy(node->error, "DEBUG: No reference to symbol table");
@@ -128,7 +128,7 @@ Node createNode_GetSymbol(const char* identifier) {
         return false; \
     } \
 
-bool processNode_Assign(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_Assign(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;
@@ -206,7 +206,7 @@ Node createNode_Assign(Node* node_target, Node* node_value, const char* operator
     return node;
 }
 
-bool processNode_SetSymbolConfig(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_SetSymbolConfig(Node* node, const ProcessMode process_mode) {
     if(process_mode == PM_FULL) {
         return true;
     }
@@ -242,7 +242,7 @@ Node createNode_SetSymbolConfig(SymbolValue value) {
     };
 }
 
-bool processNode_AddSymbol_Uninitialized(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_AddSymbol_Uninitialized(Node* node, const ProcessMode process_mode) {
     if(process_mode == PM_FULL) {
         return true;
     }
@@ -276,7 +276,7 @@ Node createNode_AddSymbol_Uninitialized(const char* identifier) {
     return node;
 }
 
-bool processNode_AddSymbol_Initialized(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_AddSymbol_Initialized(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;

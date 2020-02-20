@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-bool processNode_Ternary(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_Ternary(Node* node, const ProcessMode process_mode) {
     if(process_mode == PM_TYPE_ONLY) {
         bool all_ins_valid = processAllNodeInSlots(node, process_mode);
         if(all_ins_valid) {

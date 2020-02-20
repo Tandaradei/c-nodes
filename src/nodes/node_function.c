@@ -11,7 +11,7 @@
         return true; \
     }
 
-bool processNode_Function_0(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_Function_0(Node* node, const ProcessMode process_mode) {
     if(node->text[0] == '\0') {
         strcpy(node->error, "Function name is empty");
         return false;
@@ -42,7 +42,7 @@ Node createNode_Function_0(const char* name) {
     return node;
 }
 
-bool processNode_Function_1(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_Function_1(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;
@@ -98,7 +98,7 @@ Node createNode_Function_1(Node* arg_list, const char* name) {
     return node;
 }
 
-bool processNode_Function_2(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_Function_2(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;

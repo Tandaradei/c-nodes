@@ -22,7 +22,7 @@ function plot(trees) {
   while(trees_div.lastChild) {
     trees_div.removeChild(trees_div.lastChild);
   }
-
+  
   trees.forEach(function(data, index) {
     var tree_node = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     tree_node.setAttribute("id", "tree" + index);

@@ -5,7 +5,7 @@
 #include "node.h"
 
 #define NODE_ARITHMETIC(OPERATOR, NAME) \
-bool processNode_##NAME(Node* node, const PROCESS_MODE process_mode) { \
+bool processNode_##NAME(Node* node, const ProcessMode process_mode) { \
     bool all_ins_valid = processAllNodeInSlots(node, process_mode); \
     if(!all_ins_valid) { \
         return false; \
@@ -53,7 +53,7 @@ NODE_ARITHMETIC(-, Sub)
 NODE_ARITHMETIC(*, Mult)
 NODE_ARITHMETIC(/, Divide)
 
-bool processNode_Modulo(Node* node, const PROCESS_MODE process_mode) { 
+bool processNode_Modulo(Node* node, const ProcessMode process_mode) { 
     bool all_ins_valid = processAllNodeInSlots(node, process_mode); 
     if(!all_ins_valid) { 
         return false; 

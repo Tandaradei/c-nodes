@@ -1,6 +1,6 @@
 #include "node_bool_ops.h"
 
-bool processNode_BoolAnd(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_BoolAnd(Node* node, const ProcessMode process_mode) {
     if(process_mode == PM_TYPE_ONLY) {
         return processAllNodeInSlots(node, process_mode);
     }
@@ -63,7 +63,7 @@ Node createNode_BoolAnd(Node* node_0, Node* node_1) {
     };
 }
 
-bool processNode_BoolOr(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_BoolOr(Node* node, const ProcessMode process_mode) {
     if(process_mode == PM_TYPE_ONLY) {
         return processAllNodeInSlots(node, process_mode);
     }

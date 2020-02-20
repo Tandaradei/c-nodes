@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-bool processNode_Value(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_Value(Node* node, const ProcessMode process_mode) {
     return true;
 }
 

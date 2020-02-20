@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-bool processNodeDefault(Node* node, const PROCESS_MODE process_mode) {
+bool processNodeDefault(Node* node, const ProcessMode process_mode) {
     return true;
 }
 
@@ -56,7 +56,7 @@ Node createNode_BasicBinary(Node* node_0, Node* node_1) {
 }
 
 bool checkNodeIn(const NodeIn node_in) {
-    for(unsigned int i = 0; i < node_in.slot_count; i++) {
+    for(uint8_t i = 0; i < node_in.slot_count; i++) {
         if(!(
             node_in.slot[i].node 
         && (node_in.slot[i].allowed_value_types & node_in.slot[i].allowed_value_types)
@@ -70,7 +70,7 @@ bool checkNodeIn(const NodeIn node_in) {
 
 ValueType getHighestValueType(const NodeIn node_in) {
     ValueType type = VT_INT;
-    for(unsigned int i = 0; i < node_in.slot_count; i++) {
+    for(uint8_t i = 0; i < node_in.slot_count; i++) {
         if(node_in.slot[i].node->out.type > type) {
             type = node_in.slot[i].node->out.type;
         }
@@ -94,12 +94,12 @@ bool findNodeValueType(Node* node) {
     return false;
 }
 
-bool processAllNodeInSlots(Node* node, const PROCESS_MODE process_mode) {
+bool processAllNodeInSlots(Node* node, const ProcessMode process_mode) {
     bool type_deduction_result = true;
     switch (process_mode)
     {
     case PM_TYPE_ONLY:
-        for(unsigned int i = 0; i < node->in.slot_count; i++) {
+        for(uint8_t i = 0; i < node->in.slot_count; i++) {
             if(!findNodeValueType(node->in.slot[i].node)) {
                 type_deduction_result = false;
             }
@@ -108,7 +108,7 @@ bool processAllNodeInSlots(Node* node, const PROCESS_MODE process_mode) {
         break;
     
     case PM_FULL:
-        for(unsigned int i = 0; i < node->in.slot_count; i++) {
+        for(uint8_t i = 0; i < node->in.slot_count; i++) {
             if(!processNode(node->in.slot[i].node)) {
                 return false;
             }
@@ -193,7 +193,7 @@ void printNodeRecursively_Enhanced(const Node* node, const uint8_t depth) {
     printf(" | V: ");
     printNodeValue(NULL, node->out);
     printf(" | # In slots: %d\n", node->in.slot_count);
-    for(unsigned int i = 0; i < node->in.slot_count; i++) {
+    for(uint8_t i = 0; i < node->in.slot_count; i++) {
         printNodeRecursively_Enhanced(node->in.slot[i].node, depth + 1);
     }
 }
@@ -207,7 +207,7 @@ void printNodeRecursively_Tex(FILE* file, const Node* node, const uint8_t depth)
     PRINT(file, "}] { %s }", node->text);
     if(node->in.slot_count > 0) {
         PRINT(file, "\n");
-        for(unsigned int i = 0; i < node->in.slot_count; i++) {
+        for(uint8_t i = 0; i < node->in.slot_count; i++) {
             PRINT(file, "%schild { ", &"              "[14-depth]);
             printNodeRecursively_Tex(file, node->in.slot[i].node, depth + 1);
             PRINT(file, "%s}\n", &"              "[14-depth]);
@@ -231,7 +231,7 @@ void printNodeRecursively_Json(FILE* file, const Node* node, const uint8_t depth
     PRINT(file, "%s  \"children\":[", &"              "[14-depth]);
     if(node->in.slot_count > 0) {
         PRINT(file, "\n");
-        for(unsigned int i = 0; i < node->in.slot_count; i++) {
+        for(uint8_t i = 0; i < node->in.slot_count; i++) {
             printNodeRecursively_Json(file, node->in.slot[i].node, depth + 1);
             PRINT(file, "%s", i < node->in.slot_count - 1 ? ",\n" : "");
         }

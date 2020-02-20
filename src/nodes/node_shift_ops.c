@@ -1,6 +1,6 @@
 #include "node_shift_ops.h"
 
-bool processNode_ShiftLeft(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_ShiftLeft(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;
@@ -41,7 +41,7 @@ Node createNode_ShiftLeft(Node* node_0, Node* node_1) {
     };
 }
 
-bool processNode_ShiftRight(Node* node, const PROCESS_MODE process_mode) {
+bool processNode_ShiftRight(Node* node, const ProcessMode process_mode) {
     bool all_ins_valid = processAllNodeInSlots(node, process_mode);
     if(!all_ins_valid) {
         return false;

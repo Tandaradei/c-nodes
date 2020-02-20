@@ -13,10 +13,9 @@ typedef struct Node Node;
 
 typedef struct InSlot {
     Node* node;
-    unsigned int allowed_value_types;
+    uint32_t allowed_value_types;
     bool allow_rvalues;
 } InSlot;
-
 
 typedef struct NodeIn {
     union {
@@ -27,7 +26,7 @@ typedef struct NodeIn {
         };
         InSlot slot[3];
     };
-    unsigned int slot_count;
+    uint8_t slot_count;
 } NodeIn;
 
 typedef struct NodeOut {
@@ -37,15 +36,15 @@ typedef struct NodeOut {
     bool        is_processed;
 } NodeOut;
 
-typedef enum PROCESS_MODE {
+typedef enum ProcessMode {
     PM_TYPE_ONLY,
     PM_FULL
-} PROCESS_MODE;
+} ProcessMode;
 
 typedef struct Node {
     NodeIn in;
     NodeOut out;
-    bool (*processNode)(Node* node, const PROCESS_MODE process_mode);
+    bool (*processNode)(Node* node, const ProcessMode process_mode);
     char text[20];
     char error[200];
     void* additional_info;
@@ -63,7 +62,7 @@ ValueType getHighestValueType(const NodeIn node_in);
 
 bool findNodeValueType(Node* node);
 
-bool processAllNodeInSlots(Node* node, const PROCESS_MODE process_mode);
+bool processAllNodeInSlots(Node* node, const ProcessMode process_mode);
 bool processNode(Node* node);
 
 int getAsInt(const Node* node);
